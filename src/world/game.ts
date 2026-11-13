@@ -1,10 +1,11 @@
 import { config } from '../config';
 import { EventBus } from '../engine/event-bus';
-import { deriveSeed } from '../engine/rng';
+import { deriveSeed, Rng } from '../engine/rng';
 import { Vec } from '../engine/vec';
 import type { DungeonGenerator } from '../generation/dungeon-generator';
 import { buildLevel } from '../generation/level';
 import { RoomsAndCorridors } from '../generation/rooms-and-corridors';
+import { spawnMonsters } from '../generation/spawn-monsters';
 import type { Action, ActionResult } from './actions/action';
 import { Hero } from './hero';
 import { Stage } from './stage';
@@ -17,10 +18,19 @@ export interface GameEvents {
 
 export type GameStatus = 'playing' | 'won';
 
+/**
+ * Salts for `deriveSeed`. Depths use 1…maxDepth for their maps, so play uses 0.
+ * Spawns get their own stream per depth: tweaking the monsters never reshapes the map.
+ */
+const PLAY_SALT = 0;
+const SPAWN_SALT = 1;
+
 export class Game {
   readonly seed: number;
   readonly hero = new Hero(new Vec(0, 0));
   readonly events = new EventBus<GameEvents>();
+  /** Randomness during play (e.g. wandering monsters); depends on the player's moves. */
+  readonly rng: Rng;
 
   private readonly generator: DungeonGenerator;
   private currentStage!: Stage;
@@ -31,6 +41,7 @@ export class Game {
 
   constructor(seed: number, generator: DungeonGenerator = new RoomsAndCorridors()) {
     this.seed = seed;
+    this.rng = new Rng(deriveSeed(seed, PLAY_SALT));
     this.generator = generator;
     this.enterDepth(1);
   }
@@ -100,12 +111,17 @@ export class Game {
   }
 
   private enterDepth(depth: number): void {
-    const level = buildLevel(this.generator, deriveSeed(this.seed, depth));
+    const levelSeed = deriveSeed(this.seed, depth);
+    const level = buildLevel(this.generator, levelSeed);
     this.currentStage = new Stage(level.tiles);
     this.currentDepth = depth;
     this.currentActor = 0;
 
+    // The hero goes first so the turn order starts with the player.
     this.hero.pos = level.start;
     this.currentStage.addActor(this.hero);
+    for (const monster of spawnMonsters(level, depth, new Rng(deriveSeed(levelSeed, SPAWN_SALT)))) {
+      this.currentStage.addActor(monster);
+    }
   }
 }

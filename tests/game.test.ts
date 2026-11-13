@@ -10,6 +10,11 @@ function act(game: Game, direction: Vec): void {
   game.update();
 }
 
+/** Monsters can block the corridor and there is no combat to clear them, so these tests remove them. */
+function clearMonsters(game: Game): void {
+  for (const actor of [...game.stage.actors]) if (actor !== game.hero) game.stage.removeActor(actor);
+}
+
 function exitOf(game: Game): Vec {
   for (const [pos, tile] of game.stage.tiles.entries()) if (tile.isExit) return pos;
   throw new Error('Stage has no exit');
@@ -20,6 +25,7 @@ function walkToExit(game: Game): void {
   const { tiles } = game.stage;
   const toExit = distanceMap(tiles.width, tiles.height, exitOf(game), (pos) => tiles.get(pos).isWalkable);
   const depth = game.depth;
+  clearMonsters(game);
 
   while (game.depth === depth && game.status === 'playing') {
     const here = toExit.get(game.hero.pos);

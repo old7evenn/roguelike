@@ -32,4 +32,13 @@ export class Stage {
   addActor(actor: Actor): void {
     this.actors.push(actor);
   }
+
+  removeActor(actor: Actor): void {
+    const index = this.actors.indexOf(actor);
+    if (index !== -1) this.actors.splice(index, 1);
+  }
+
+  actorAt(pos: Vec): Actor | undefined {
+    return this.actors.find((actor) => actor.pos.equals(pos));
+  }
 }

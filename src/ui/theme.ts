@@ -1,3 +1,4 @@
+import type { BreedId } from '../world/breeds';
 import type { TileName } from '../world/tile';
 import type { Glyph } from './display';
 
@@ -15,4 +16,11 @@ export const theme = {
     stairsDown: { char: '>', fg: '#ffd166', bg: '#11111a' },
   } satisfies Record<TileName, Glyph>,
   hero: { char: '@', fg: '#f4f4ff' } satisfies Glyph,
+  monsters: {
+    rat: { char: 'r', fg: '#b08968' },
+    bat: { char: 'b', fg: '#9d8df1' },
+    goblin: { char: 'g', fg: '#7bd389' },
+    skeleton: { char: 's', fg: '#d6d0b8' },
+    troll: { char: 'T', fg: '#e07a5f' },
+  } satisfies Record<BreedId, Glyph>,
 } as const;

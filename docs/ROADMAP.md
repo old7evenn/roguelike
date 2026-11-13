@@ -11,12 +11,12 @@
 
 ## Етап 2 — Standard (оцінка 4)
 
-### 2.1 Монстри
-- [ ] `Breed` — Type Object: назва, `maxHp`, `attack`, `defense`, поведінка, глибина появи. Таблиця порід у `world/breeds.ts`, гліфи в `ui/theme.ts`.
-- [ ] `Monster extends Actor` з `hp`; `nextAction` делегує `Behavior` (Strategy).
-- [ ] Поведінки: `ChaseBehavior` (йде вниз по `distanceMap` від героя, якщо бачить або чує), `WanderBehavior`.
-- [ ] `Stage.actorAt(pos)`; актори блокують прохід.
-- [ ] Спавн монстрів на поверсі з детермінованого `Rng` (окремий seed від генерації карти); глибші поверхи — сильніші породи.
+### 2.1 Монстри ✅
+- [x] `Breed` — Type Object: назва, `maxHp`, `attack`, `defense`, поведінка, глибина появи. Таблиця порід у `world/breeds.ts`, гліфи в `ui/theme.ts`.
+- [x] `Monster extends Actor` з `hp`; `nextAction` делегує `Behavior` (Strategy).
+- [x] Поведінки: `ChaseBehavior` (йде вниз по `distanceMap` від героя, якщо бачить або чує), `WanderBehavior`.
+- [x] `Stage.actorAt(pos)`; актори блокують прохід.
+- [x] Спавн монстрів на поверсі з детермінованого `Rng` (окремий seed від генерації карти); глибші поверхи — сильніші породи.
 
 ### 2.2 Бій
 - [ ] `hp`, `attack`, `defense` у героя.

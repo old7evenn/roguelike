@@ -25,8 +25,8 @@ Layers depend downward only: `ui → world/generation → engine`. `world/` must
 | Layer | Contents |
 |---|---|
 | `src/engine/` | Game-agnostic building blocks: `Vec`, `Rect`, `Array2D`, `Rng`, `EventBus`, `distanceMap` |
-| `src/world/` | Game model: `Game` (turn loop), `Stage`, `Actor`/`Hero`, `Tiles`, `actions/` |
-| `src/generation/` | `DungeonGenerator` strategy implementations, `buildLevel` |
+| `src/world/` | Game model: `Game` (turn loop), `Stage`, `Actor`/`Hero`/`Monster`, `Tiles`, `Breeds`, `actions/`, `behaviors/` |
+| `src/generation/` | `DungeonGenerator` strategy implementations, `buildLevel`, `spawnMonsters` |
 | `src/ui/` | `Display` + `CanvasDisplay`, `Ui`, `screens/`, input bindings, `theme` |
 | `src/main.ts` | Composition root only |
 

@@ -17,6 +17,7 @@ export class WalkAction extends Action {
     const tile = game.stage.tileAt(target);
 
     if (!tile.isWalkable) return ActionResult.failure('Тут стіна.');
+    if (game.stage.actorAt(target)) return ActionResult.failure('Прохід зайнятий.');
     if (tile.isExit && this.actor === game.hero) {
       return ActionResult.alternate(new DescendAction(this.actor));
     }

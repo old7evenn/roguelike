@@ -36,8 +36,8 @@ npm run build  # продакшн-збірка в dist/
 src/
 ├── engine/       загальні будівельні блоки, без знань про гру
 │                 Vec, Rect, Array2D, Rng, EventBus, distanceMap (BFS)
-├── world/        модель гри: Game, Stage, Actor/Hero, тайли, дії
-├── generation/   генератори підземель і збирання рівня
+├── world/        модель гри: Game, Stage, Actor/Hero/Monster, тайли, породи, дії, поведінки
+├── generation/   генератори підземель, збирання рівня, спавн монстрів
 ├── ui/           Display, екрани, клавіші, тема
 └── main.ts       точка складання: створює Display і Ui, запускає цикл
 ```
@@ -58,8 +58,8 @@ flowchart LR
 |---|---|---|
 | **Command** | `world/actions/*` | Хід — це об'єкт `Action`. Ігровий цикл однаково виконує дії гравця й монстрів, і нова механіка — це новий клас, а не ще одна гілка `switch`. |
 | **Alternate action** (різновид Command) | `ActionResult.alternate` | Дія може замість себе запустити іншу: крок на сходи стає спуском, а крок у монстра стане атакою. Шар введення про це не знає. |
-| **Type Object** | `world/tile.ts` | Тайл — спільний незмінний об'єкт `TileType` із властивостями (`isWalkable`, `isExit`), а не магічне число. Двері чи вода — це новий запис, а не нові `if`. |
-| **Strategy** | `generation/dungeon-generator.ts` | `Game` залежить тільки від інтерфейсу `DungeonGenerator`, тож BSP чи печери можна підставити без змін у грі. |
+| **Type Object** | `world/tile.ts`, `world/breeds.ts` | Тайл — спільний незмінний об'єкт `TileType` із властивостями (`isWalkable`, `isExit`), а не магічне число. Порода `Breed` так само зберігає все спільне для виду монстрів (HP, атака, поведінка, глибина появи), а `Monster` — лише своє: позицію й поточне HP. Новий тайл чи монстр — це новий запис, а не нові `if` чи підкласи. |
+| **Strategy** | `generation/dungeon-generator.ts`, `world/behaviors/*` | `Game` залежить тільки від інтерфейсу `DungeonGenerator`, тож BSP чи печери можна підставити без змін у грі. Монстр так само делегує вибір ходу `Behavior`: `ChaseBehavior` іде до героя по карті відстаней, `WanderBehavior` блукає. |
 | **Observer** | `engine/event-bus.ts` | Світ повідомляє, що сталося (`message`, `depthChanged`, `victory`), і не знає, хто слухає: журнал, звук чи екран. |
 | **State** | `ui/screens/*` | Кожен екран (титул, гра, перемога) сам обробляє введення і малює себе. Без `if (screen === ...)` по всьому коду. |
 | **Game Loop + Dirty Flag** | `main.ts`, `ui/ui.ts` | `requestAnimationFrame` крутиться постійно, але перемальовує тільки після змін, бо гра покрокова. |
@@ -97,7 +97,7 @@ flowchart LR
 - [x] деплой на GitHub Pages
 
 ### Standard — «It's a Real Roguelike»
-- [ ] вороги (≥2 типи), що рухаються до гравця
+- [x] вороги (≥2 типи), що рухаються до гравця
 - [ ] бій «bump-to-attack», HP гравця й ворогів, смерть → екран поразки
 - [ ] предмети: зілля, зброя; інвентар
 - [ ] журнал повідомлень

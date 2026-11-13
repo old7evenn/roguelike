@@ -8,7 +8,7 @@ import type { Game } from '../../world/game';
 import type { Display } from '../display';
 import type { Input } from '../input';
 import type { Screen } from '../screen';
-import { drawStage } from '../stage-view';
+import { drawActors, drawStage } from '../stage-view';
 import { theme } from '../theme';
 import type { Ui } from '../ui';
 import { TitleScreen } from './title-screen';
@@ -57,7 +57,7 @@ export class PlayScreen implements Screen {
 
   render(display: Display): void {
     drawStage(display, this.game.stage);
-    display.drawGlyph(this.game.hero.pos, theme.hero);
+    drawActors(display, this.game.stage);
     this.renderStatusBar(display);
   }
 
