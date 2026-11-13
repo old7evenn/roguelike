@@ -3,7 +3,7 @@
 Покрокова roguelike-гра в браузері з процедурною генерацією підземель.
 Семестровий проєкт з дисципліни JavaScript — [Lab 26: Procedural Roguelike](https://github.com/rmalkevy/Programming-Practice-Projects/blob/main/labs/lab-26-procedural-roguelike.md) програми «42».
 
-**▶ Грати:** _посилання з'явиться після першого деплою на GitHub Pages_
+**▶ Грати:** https://old7evenn.github.io/roguelike/
 
 > Кожен забіг має **seed**. Однаковий seed — однакове підземелля на всіх 10 поверхах.
 > Посилання виду `…/?seed=1234` можна надіслати другу, і він пройде ті самі поверхи.
@@ -75,7 +75,7 @@ flowchart LR
 - [x] сходи генерують наступний поверх
 - [x] 10 поверхів, перемога на останньому
 - [x] seed у URL, детермінізм покрито тестами
-- [ ] деплой на GitHub Pages
+- [x] деплой на GitHub Pages
 
 ### Standard — «It's a Real Roguelike»
 - [ ] вороги (≥2 типи), що рухаються до гравця
