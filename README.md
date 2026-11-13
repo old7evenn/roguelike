@@ -85,6 +85,8 @@ flowchart LR
 
 ## План і прогрес
 
+Детальний план реалізації: [docs/ROADMAP.md](docs/ROADMAP.md).
+
 ### Basic — «It Generates»
 - [x] 2D-сітка й рендер (ASCII на canvas)
 - [x] процедурна генерація поверху
