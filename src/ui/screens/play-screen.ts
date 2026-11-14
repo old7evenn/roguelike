@@ -9,9 +9,10 @@ import type { Display } from '../display';
 import type { Input } from '../input';
 import type { Screen } from '../screen';
 import { drawActors, drawStage } from '../stage-view';
-import { floorLines } from '../story';
+import { chapters } from '../story';
 import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
+import { ChapterScreen } from './chapter-screen';
 import { TitleScreen } from './title-screen';
 import { VictoryScreen } from './victory-screen';
 
@@ -35,6 +36,9 @@ export class PlayScreen implements Screen {
 
     game.events.on('message', (text) => {
       this.message = text;
+    });
+    game.events.on('depthChanged', (depth) => {
+      ui.goTo(new ChapterScreen(ui, depth, this));
     });
     game.events.on('victory', () => {
       ui.goTo(new VictoryScreen(ui, game));
@@ -75,12 +79,16 @@ export class PlayScreen implements Screen {
     const { depth, turns, seed } = this.game;
     const top = config.stageHeight;
 
-    display.drawText(0.5, top, `Поверх ${depth}/${config.maxDepth} · Хід ${turns} · seed ${seed}`, {
-      color: theme.text,
+    const chapterName = chapters[depth - 1]?.name ?? '';
+
+    display.drawText(0.5, top, `Поверх ${depth}/${config.maxDepth} · ${chapterName}`, {
+      color: tileGlyphs(depth).wall.fg,
     });
-    display.drawText(display.columns - 0.5, top, CONTROLS_HINT, { color: theme.dim, align: 'right' });
-    // The floor's line of inner monologue stays up for the whole floor; messages below it come and go.
-    display.drawText(0.5, top + 1, floorLines[depth - 1] ?? '', { color: theme.accent });
-    display.drawText(0.5, top + 2, this.message, { color: theme.text });
+    display.drawText(display.columns - 0.5, top, `Хід ${turns} · seed ${seed}`, {
+      color: theme.dim,
+      align: 'right',
+    });
+    display.drawText(0.5, top + 1, this.message, { color: theme.text });
+    display.drawText(display.columns - 0.5, top + 1, CONTROLS_HINT, { color: theme.dim, align: 'right' });
   }
 }

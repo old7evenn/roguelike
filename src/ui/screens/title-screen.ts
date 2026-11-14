@@ -9,6 +9,7 @@ import { writeSeedToUrl } from '../seed-url';
 import { drawStars, rowRange } from '../starfield';
 import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
+import { ChapterScreen } from './chapter-screen';
 import { PlayScreen } from './play-screen';
 
 const STEP_WIDTH = 3;
@@ -29,7 +30,7 @@ export class TitleScreen implements Screen {
   handleInput(input: Input): boolean {
     switch (input) {
       case 'confirm':
-        this.ui.goTo(new PlayScreen(this.ui, new Game(this.seed)));
+        this.ui.goTo(new ChapterScreen(this.ui, 1, new PlayScreen(this.ui, new Game(this.seed))));
         return true;
       case 'newGame':
         this.ui.goTo(new TitleScreen(this.ui, randomSeed()));
