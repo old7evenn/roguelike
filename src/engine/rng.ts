@@ -31,6 +31,17 @@ export class Rng {
     if (items.length === 0) throw new RangeError('Cannot pick from an empty list');
     return items[Math.floor(this.float() * items.length)] as T;
   }
+
+  /** Picks an item with probability proportional to its weight. */
+  weighted<T>(items: readonly T[], weight: (item: T) => number): T {
+    const total = items.reduce((sum, item) => sum + weight(item), 0);
+    let roll = this.float() * total;
+    for (const item of items) {
+      roll -= weight(item);
+      if (roll < 0) return item;
+    }
+    throw new RangeError('Cannot pick from an empty or weightless list');
+  }
 }
 
 /**

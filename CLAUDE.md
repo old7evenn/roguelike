@@ -25,8 +25,8 @@ Layers depend downward only: `ui → world/generation → engine`. `world/` must
 | Layer | Contents |
 |---|---|
 | `src/engine/` | Game-agnostic building blocks: `Vec`, `Rect`, `Array2D`, `Rng`, `EventBus`, `distanceMap` |
-| `src/world/` | Game model: `Game` (turn loop), `Stage`, `Actor`/`Hero`/`Monster`, `Tiles`, `Breeds`, `actions/`, `behaviors/` |
-| `src/generation/` | `DungeonGenerator` strategy implementations, `buildLevel`, `spawnMonsters` |
+| `src/world/` | Game model: `Game` (turn loop), `Stage`, `Actor`/`Hero`/`Monster`, `Tiles`, `Breeds`, `ItemTypes`, `actions/`, `behaviors/` |
+| `src/generation/` | `DungeonGenerator` strategy implementations, `buildLevel`, `spawnMonsters`, `spawnItems` |
 | `src/ui/` | `Display` + `CanvasDisplay`, `Ui`, `screens/`, input bindings, `theme` |
 | `src/main.ts` | Composition root only |
 
@@ -38,7 +38,7 @@ Layers depend downward only: `ui → world/generation → engine`. `world/` must
 - **Monster behaviour** → a Strategy object the monster delegates `nextAction` to.
 - **New generator** → implement `DungeonGenerator`; exit placement stays in `buildLevel`.
 - **World → UI communication** → emit on `game.events` (add the event to `GameEvents`); never import UI from `world/`.
-- **New screen** → implement `Screen` in `ui/screens/`; navigate with `ui.goTo(...)`.
+- **New screen** → implement `Screen` in `ui/screens/`; navigate with `ui.goTo(...)`, or `ui.push`/`ui.pop` for an overlay drawn on top of the current screen.
 - All randomness goes through a seeded `Rng`. Never call `Math.random()` in `world/` or `generation/`; same seed must give the same run.
 
 ## Code style

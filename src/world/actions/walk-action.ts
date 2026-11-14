@@ -4,6 +4,7 @@ import type { Game } from '../game';
 import { Action, ActionResult } from './action';
 import { AttackAction } from './attack-action';
 import { DescendAction } from './descend-action';
+import { PickUpAction } from './pick-up-action';
 
 export class WalkAction extends Action {
   private readonly direction: Vec;
@@ -32,6 +33,10 @@ export class WalkAction extends Action {
     }
 
     this.actor.pos = target;
+    // Picking up is part of the same step, so it doesn't cost the hero an extra turn.
+    if (this.actor === game.hero && game.stage.itemAt(target)) {
+      return ActionResult.alternate(new PickUpAction(game.hero));
+    }
     return ActionResult.success;
   }
 }

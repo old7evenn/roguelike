@@ -1,5 +1,6 @@
 import { config } from '../config';
 import type { BreedId } from '../world/breeds';
+import type { ItemId } from '../world/items';
 import type { TileName } from '../world/tile';
 import { mixColors } from './color';
 import type { Glyph } from './display';
@@ -23,6 +24,14 @@ export const theme = {
     memory: { char: 'с', fg: '#8fc9ff' },
     burden: { char: 'Т', fg: '#e0607e' },
   } satisfies Record<BreedId, Glyph>,
+  // Classic roguelike shapes: '!' is something to drink, '/' something to hold.
+  items: {
+    tea: { char: '!', fg: '#f4a96a' },
+    cocoa: { char: '!', fg: '#c98a5e' },
+    pencil: { char: '/', fg: '#f2d16b' },
+    flashlight: { char: '/', fg: '#fff3b0' },
+    diary: { char: '/', fg: '#ffb3c7' },
+  } satisfies Record<ItemId, Glyph>,
 } as const;
 
 interface Colors {

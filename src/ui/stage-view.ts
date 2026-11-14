@@ -3,6 +3,7 @@ import type { Stage } from '../world/stage';
 import { type TileName, Tiles } from '../world/tile';
 import { actorGlyph } from './actor-view';
 import type { Display, Glyph } from './display';
+import { theme } from './theme';
 
 export type TileGlyphs = Record<TileName, Glyph>;
 
@@ -11,6 +12,12 @@ export function drawStage(display: Display, stage: Stage, glyphs: TileGlyphs): v
     // Only walls bordering open space are drawn; solid rock stays black.
     if (tile === Tiles.wall && !bordersOpenSpace(stage, pos)) continue;
     display.drawGlyph(pos, glyphs[tile.name]);
+  }
+}
+
+export function drawItems(display: Display, stage: Stage, glyphs: TileGlyphs): void {
+  for (const { type, pos } of stage.items) {
+    display.drawGlyph(pos, { ...theme.items[type.id], bg: glyphs[stage.tileAt(pos).name].bg });
   }
 }
 

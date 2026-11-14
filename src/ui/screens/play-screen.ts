@@ -3,16 +3,18 @@ import { randomSeed } from '../../engine/rng';
 import { Direction, type Vec } from '../../engine/vec';
 import type { Action } from '../../world/actions/action';
 import { RestAction } from '../../world/actions/rest-action';
+import { UseItemAction } from '../../world/actions/use-item-action';
 import { WalkAction } from '../../world/actions/walk-action';
 import type { Game } from '../../world/game';
 import { actorName } from '../actor-view';
 import type { Display } from '../display';
 import type { Input } from '../input';
 import type { Screen } from '../screen';
-import { drawActors, drawStage } from '../stage-view';
+import { drawActors, drawItems, drawStage } from '../stage-view';
 import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
 import { GameOverScreen } from './game-over-screen';
+import { InventoryScreen } from './inventory-screen';
 import { TitleScreen } from './title-screen';
 import { VictoryScreen } from './victory-screen';
 
@@ -23,7 +25,7 @@ const WALK_DIRECTIONS: Partial<Record<Input, Vec>> = {
   west: Direction.west,
 };
 
-const CONTROLS_HINT = 'WASD / стрілки — рух · . — чекати · N — нова гра';
+const CONTROLS_HINT = 'WASD / стрілки — рух · . — чекати · I — речі · N — нова гра';
 
 export class PlayScreen implements Screen {
   private readonly ui: Ui;
@@ -43,6 +45,15 @@ export class PlayScreen implements Screen {
       );
     });
     game.events.on('death', ({ actor }) => this.say(`${capitalize(actorName(actor))} розвіюється.`));
+    game.events.on('itemPickedUp', (item) => this.say(`Підібрано: ${item.name}.`));
+    game.events.on('itemUsed', (item) => {
+      const { hero } = game;
+      this.say(
+        item.kind === 'potion'
+          ? `${capitalize(item.name)}: HP ${hero.hp}/${hero.maxHp}.`
+          : `Тепер у руках ${item.name}.`,
+      );
+    });
     game.events.on('victory', () => {
       ui.goTo(new VictoryScreen(ui, game));
     });
@@ -57,20 +68,30 @@ export class PlayScreen implements Screen {
       return true;
     }
 
+    if (input === 'inventory') {
+      const { hero } = this.game;
+      this.ui.push(new InventoryScreen(this.ui, hero, (item) => this.act(new UseItemAction(hero, item))));
+      return true;
+    }
+
     const action = this.actionFor(input);
     if (!action) return false;
-
-    this.message = '';
-    this.game.hero.setNextAction(action);
-    this.game.update();
+    this.act(action);
     return true;
   }
 
   render(display: Display): void {
     const glyphs = tileGlyphs(this.game.depth);
     drawStage(display, this.game.stage, glyphs);
+    drawItems(display, this.game.stage, glyphs);
     drawActors(display, this.game.stage, glyphs);
     this.renderStatusBar(display);
+  }
+
+  private act(action: Action): void {
+    this.message = '';
+    this.game.hero.setNextAction(action);
+    this.game.update();
   }
 
   /** One turn can produce several messages (a hit and the counter-hit), so they accumulate until the next input. */
@@ -90,9 +111,14 @@ export class PlayScreen implements Screen {
     const { depth, turns, seed, hero } = this.game;
     const top = config.stageHeight;
 
-    display.drawText(0.5, top, `Поверх ${depth}/${config.maxDepth} · HP ${hero.hp}/${hero.maxHp}`, {
-      color: tileGlyphs(depth).wall.fg,
-    });
+    display.drawText(
+      0.5,
+      top,
+      `Поверх ${depth}/${config.maxDepth} · HP ${hero.hp}/${hero.maxHp} · атака ${hero.attack}`,
+      {
+        color: tileGlyphs(depth).wall.fg,
+      },
+    );
     display.drawText(display.columns - 0.5, top, `Хід ${turns} · seed ${seed}`, {
       color: theme.dim,
       align: 'right',

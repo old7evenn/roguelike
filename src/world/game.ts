@@ -5,10 +5,12 @@ import { Vec } from '../engine/vec';
 import type { DungeonGenerator } from '../generation/dungeon-generator';
 import { buildLevel } from '../generation/level';
 import { RoomsAndCorridors } from '../generation/rooms-and-corridors';
+import { spawnItems } from '../generation/spawn-items';
 import { spawnMonsters } from '../generation/spawn-monsters';
 import type { Action, ActionResult } from './actions/action';
 import type { Actor } from './actor';
 import { Hero } from './hero';
+import type { ItemType } from './items';
 import { Stage } from './stage';
 
 export interface GameEvents {
@@ -19,16 +21,20 @@ export interface GameEvents {
   /** A monster died; the hero dying is `defeat` instead. */
   death: { actor: Actor; killer: Actor };
   defeat: { killer: Actor };
+  itemPickedUp: ItemType;
+  itemUsed: ItemType;
 }
 
 export type GameStatus = 'playing' | 'won' | 'lost';
 
 /**
  * Salts for `deriveSeed`. Depths use 1…maxDepth for their maps, so play uses 0.
- * Spawns get their own stream per depth: tweaking the monsters never reshapes the map.
+ * Spawns get their own streams per depth: tweaking monsters or items never reshapes
+ * the map, and tweaking items never moves the monsters.
  */
 const PLAY_SALT = 0;
 const SPAWN_SALT = 1;
+const ITEM_SALT = 2;
 
 export class Game {
   readonly seed: number;
@@ -139,6 +145,9 @@ export class Game {
     this.currentStage.addActor(this.hero);
     for (const monster of spawnMonsters(level, depth, new Rng(deriveSeed(levelSeed, SPAWN_SALT)))) {
       this.currentStage.addActor(monster);
+    }
+    for (const item of spawnItems(level, depth, new Rng(deriveSeed(levelSeed, ITEM_SALT)))) {
+      this.currentStage.addItem(item);
     }
   }
 }

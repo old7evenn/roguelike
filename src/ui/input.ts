@@ -1,5 +1,14 @@
 /** What the player means, independent of which key they pressed. */
-export type Input = 'north' | 'south' | 'east' | 'west' | 'rest' | 'confirm' | 'newGame';
+export type Input =
+  | 'north'
+  | 'south'
+  | 'east'
+  | 'west'
+  | 'rest'
+  | 'confirm'
+  | 'cancel'
+  | 'inventory'
+  | 'newGame';
 
 /**
  * Keyed by `KeyboardEvent.code` (physical key), not `.key`,
@@ -17,6 +26,8 @@ const KEY_BINDINGS: ReadonlyMap<string, Input> = new Map([
   ['Period', 'rest'],
   ['Enter', 'confirm'],
   ['Space', 'confirm'],
+  ['Escape', 'cancel'],
+  ['KeyI', 'inventory'],
   ['KeyN', 'newGame'],
 ]);
 

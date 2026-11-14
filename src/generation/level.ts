@@ -22,3 +22,15 @@ export function buildLevel(generator: DungeonGenerator, seed: number): Level {
   tiles.set(exit, Tiles.stairsDown);
   return { tiles, start, exit };
 }
+
+/** Reachable plain floor more than `minDistance` steps from the start; stairs are excluded. */
+export function floorAwayFromStart(level: Level, minDistance: number): Vec[] {
+  const { tiles, start } = level;
+  const fromStart = distanceMap(tiles.width, tiles.height, start, (pos) => tiles.get(pos).isWalkable);
+  const cells: Vec[] = [];
+  for (const [pos, tile] of tiles.entries()) {
+    const distance = fromStart.get(pos);
+    if (tile === Tiles.floor && Number.isFinite(distance) && distance > minDistance) cells.push(pos);
+  }
+  return cells;
+}
