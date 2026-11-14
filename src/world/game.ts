@@ -101,7 +101,6 @@ export class Game {
     }
     this.enterDepth(this.currentDepth + 1);
     this.events.emit('depthChanged', this.currentDepth);
-    this.events.emit('message', `Поверх ${this.currentDepth}.`);
   }
 
   private perform(action: Action): ActionResult {

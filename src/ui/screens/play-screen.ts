@@ -9,7 +9,8 @@ import type { Display } from '../display';
 import type { Input } from '../input';
 import type { Screen } from '../screen';
 import { drawActors, drawStage } from '../stage-view';
-import { theme } from '../theme';
+import { floorLines } from '../story';
+import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
 import { TitleScreen } from './title-screen';
 import { VictoryScreen } from './victory-screen';
@@ -26,7 +27,7 @@ const CONTROLS_HINT = 'WASD / стрілки — рух · . — чекати ·
 export class PlayScreen implements Screen {
   private readonly ui: Ui;
   private readonly game: Game;
-  private message = 'Знайди сходи вниз (>).';
+  private message = 'Сходи вниз позначено >.';
 
   constructor(ui: Ui, game: Game) {
     this.ui = ui;
@@ -56,8 +57,9 @@ export class PlayScreen implements Screen {
   }
 
   render(display: Display): void {
-    drawStage(display, this.game.stage);
-    drawActors(display, this.game.stage);
+    const glyphs = tileGlyphs(this.game.depth);
+    drawStage(display, this.game.stage, glyphs);
+    drawActors(display, this.game.stage, glyphs);
     this.renderStatusBar(display);
   }
 
@@ -77,6 +79,8 @@ export class PlayScreen implements Screen {
       color: theme.text,
     });
     display.drawText(display.columns - 0.5, top, CONTROLS_HINT, { color: theme.dim, align: 'right' });
-    display.drawText(0.5, top + 1, this.message, { color: theme.accent });
+    // The floor's line of inner monologue stays up for the whole floor; messages below it come and go.
+    display.drawText(0.5, top + 1, floorLines[depth - 1] ?? '', { color: theme.accent });
+    display.drawText(0.5, top + 2, this.message, { color: theme.text });
   }
 }

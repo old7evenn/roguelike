@@ -1,26 +1,60 @@
+import { config } from '../config';
 import type { BreedId } from '../world/breeds';
 import type { TileName } from '../world/tile';
+import { mixColors } from './color';
 import type { Glyph } from './display';
 
 /** All presentation lives here; retheming the game never touches world code. */
 export const theme = {
-  title: 'ROGUELIKE',
-  subtitle: 'Спустись на 10-й поверх',
-  background: '#0b0b10',
-  text: '#c9c9d6',
-  dim: '#6b6b80',
-  accent: '#ffd166',
-  tiles: {
-    wall: { char: '#', fg: '#5b5b78', bg: '#1a1a26' },
-    floor: { char: '·', fg: '#34344a', bg: '#11111a' },
-    stairsDown: { char: '>', fg: '#ffd166', bg: '#11111a' },
-  } satisfies Record<TileName, Glyph>,
-  hero: { char: '@', fg: '#f4f4ff' } satisfies Glyph,
+  title: 'ДНО',
+  subtitle: 'Десять поверхів униз. Без поспіху.',
+  background: '#0e0c1b',
+  text: '#e8dff5',
+  dim: '#7a6f99',
+  faint: '#2e2848',
+  accent: '#ffb3c7',
+  stairs: '#8ef0d0',
+  hero: { char: '@', fg: '#ffcf9f' } satisfies Glyph,
+  // The monsters are intrusive thoughts, so each glyph is the first letter of its Ukrainian name.
   monsters: {
-    rat: { char: 'r', fg: '#b08968' },
-    bat: { char: 'b', fg: '#9d8df1' },
-    goblin: { char: 'g', fg: '#7bd389' },
-    skeleton: { char: 's', fg: '#d6d0b8' },
-    troll: { char: 'T', fg: '#e07a5f' },
+    whisper: { char: 'ш', fg: '#b9a7e8' },
+    restlessness: { char: 'н', fg: '#f2d16b' },
+    reproach: { char: 'д', fg: '#ff8a80' },
+    memory: { char: 'с', fg: '#8fc9ff' },
+    burden: { char: 'Т', fg: '#e0607e' },
   } satisfies Record<BreedId, Glyph>,
 } as const;
+
+interface Colors {
+  readonly fg: string;
+  readonly bg: string;
+}
+
+type Surface = Readonly<Record<'wall' | 'floor', Colors>>;
+
+/** The first floor is a cold night; every floor down warms a step toward dawn. */
+const SURFACE_TOP: Surface = {
+  wall: { fg: '#4f63a3', bg: '#222c60' },
+  floor: { fg: '#2c3766', bg: '#10142c' },
+};
+
+const SURFACE_BOTTOM: Surface = {
+  wall: { fg: '#c46f8f', bg: '#55264a' },
+  floor: { fg: '#5a2f50', bg: '#1d1022' },
+};
+
+export function tileGlyphs(depth: number): Record<TileName, Glyph> {
+  const t = (depth - 1) / (config.maxDepth - 1);
+  const mix = (part: keyof Surface): Colors => ({
+    fg: mixColors(SURFACE_TOP[part].fg, SURFACE_BOTTOM[part].fg, t),
+    bg: mixColors(SURFACE_TOP[part].bg, SURFACE_BOTTOM[part].bg, t),
+  });
+  const floor = mix('floor');
+
+  return {
+    // Walls are solid blocks rather than '#': rooms read as clean silhouettes.
+    wall: { char: '', ...mix('wall') },
+    floor: { char: '·', ...floor },
+    stairsDown: { char: '>', fg: theme.stairs, bg: floor.bg },
+  };
+}

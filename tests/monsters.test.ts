@@ -47,15 +47,15 @@ function monstersOf(game: Game): Monster[] {
 
 describe('breeds', () => {
   it('unlocks stronger breeds deeper', () => {
-    expect(breedsForDepth(1).map((breed) => breed.id)).toEqual(['rat', 'bat']);
+    expect(breedsForDepth(1).map((breed) => breed.id)).toEqual(['whisper', 'restlessness']);
     expect(breedsForDepth(10)).toHaveLength(Object.keys(Breeds).length);
   });
 
   it('gives every monster its own hp, starting at the breed maximum', () => {
-    const a = new Monster(Breeds.goblin, new Vec(1, 1));
-    const b = new Monster(Breeds.goblin, new Vec(2, 1));
+    const a = new Monster(Breeds.reproach, new Vec(1, 1));
+    const b = new Monster(Breeds.reproach, new Vec(2, 1));
     a.hp -= 2;
-    expect(b.hp).toBe(Breeds.goblin.maxHp);
+    expect(b.hp).toBe(Breeds.reproach.maxHp);
   });
 });
 
@@ -103,7 +103,7 @@ describe('spawnMonsters', () => {
 
 describe('Game with monsters', () => {
   it('blocks the hero from walking into a monster, without spending a turn', () => {
-    const { game, monster } = gameWith(Breeds.bat, new Vec(2, 1));
+    const { game, monster } = gameWith(Breeds.restlessness, new Vec(2, 1));
     const messages: string[] = [];
     game.events.on('message', (text) => messages.push(text));
 
@@ -130,7 +130,7 @@ describe('ChaseBehavior', () => {
   const chase = new ChaseBehavior(6);
 
   it('steps closer to a hero it can sense, then waits next to them', () => {
-    const { game, monster } = gameWith({ ...Breeds.rat, behavior: chase }, new Vec(5, 3));
+    const { game, monster } = gameWith({ ...Breeds.whisper, behavior: chase }, new Vec(5, 3));
     const distanceToHero = () => {
       const { x, y } = game.hero.pos;
       return Math.abs(monster.pos.x - x) + Math.abs(monster.pos.y - y);
@@ -143,21 +143,21 @@ describe('ChaseBehavior', () => {
   });
 
   it('stays put when the hero is beyond its sense radius', () => {
-    const { game, monster } = gameWith(Breeds.rat, new Vec(15, 5));
+    const { game, monster } = gameWith(Breeds.whisper, new Vec(15, 5));
     expect(chase.nextAction(monster, game)).toBeInstanceOf(RestAction);
   });
 
   it('takes another shortest step when a monster blocks the first one', () => {
-    const { game, monster } = gameWith(Breeds.rat, new Vec(3, 2));
-    game.stage.addActor(new Monster(Breeds.bat, new Vec(3, 1)));
+    const { game, monster } = gameWith(Breeds.whisper, new Vec(3, 2));
+    game.stage.addActor(new Monster(Breeds.restlessness, new Vec(3, 1)));
 
     chase.nextAction(monster, game).perform(game);
     expect(monster.pos).toEqual(new Vec(2, 2));
   });
 
   it('waits behind a monster when no other step gets closer', () => {
-    const { game, monster } = gameWith(Breeds.rat, new Vec(3, 1));
-    game.stage.addActor(new Monster(Breeds.bat, new Vec(2, 1)));
+    const { game, monster } = gameWith(Breeds.whisper, new Vec(3, 1));
+    game.stage.addActor(new Monster(Breeds.restlessness, new Vec(2, 1)));
     expect(chase.nextAction(monster, game)).toBeInstanceOf(RestAction);
   });
 });
@@ -165,13 +165,13 @@ describe('ChaseBehavior', () => {
 describe('WanderBehavior', () => {
   it('only steps onto free walkable neighbours', () => {
     const wander = new WanderBehavior();
-    const { game, monster } = gameWith(Breeds.bat, new Vec(1, 2));
-    game.stage.addActor(new Monster(Breeds.bat, new Vec(2, 2)));
+    const { game, monster } = gameWith(Breeds.restlessness, new Vec(1, 2));
+    game.stage.addActor(new Monster(Breeds.restlessness, new Vec(2, 2)));
 
     for (let i = 0; i < 20; i++) {
       monster.pos = new Vec(1, 2);
       wander.nextAction(monster, game).perform(game);
-      // (1, 1) is the hero, (0, 2) is a wall, (2, 2) is the other bat.
+      // (1, 1) is the hero, (0, 2) is a wall, (2, 2) is the other monster.
       expect(monster.pos).toEqual(new Vec(1, 3));
     }
   });
