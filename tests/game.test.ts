@@ -4,15 +4,11 @@ import { distanceMap } from '../src/engine/distance-map';
 import { CARDINAL_DIRECTIONS, Direction, type Vec } from '../src/engine/vec';
 import { WalkAction } from '../src/world/actions/walk-action';
 import { Game } from '../src/world/game';
+import { clearMonsters } from './helpers';
 
 function act(game: Game, direction: Vec): void {
   game.hero.setNextAction(new WalkAction(game.hero, direction));
   game.update();
-}
-
-/** Monsters can block the corridor and there is no combat to clear them, so these tests remove them. */
-function clearMonsters(game: Game): void {
-  for (const actor of [...game.stage.actors]) if (actor !== game.hero) game.stage.removeActor(actor);
 }
 
 function exitOf(game: Game): Vec {
@@ -25,6 +21,7 @@ function walkToExit(game: Game): void {
   const { tiles } = game.stage;
   const toExit = distanceMap(tiles.width, tiles.height, exitOf(game), (pos) => tiles.get(pos).isWalkable);
   const depth = game.depth;
+  // These tests are about the stairs, so monsters standing in the corridor are removed.
   clearMonsters(game);
 
   while (game.depth === depth && game.status === 'playing') {

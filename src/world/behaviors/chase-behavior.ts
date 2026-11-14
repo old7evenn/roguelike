@@ -30,7 +30,7 @@ export class ChaseBehavior implements Behavior {
     const step = CARDINAL_DIRECTIONS.find((direction) => {
       const next = monster.pos.add(direction);
       if (!toHero.contains(next) || toHero.get(next) >= here) return false;
-      // Stepping into the hero is allowed: that bump becomes an attack once combat exists.
+      // Stepping into the hero is allowed: `WalkAction` turns that bump into an attack.
       const occupant = stage.actorAt(next);
       return !occupant || occupant === hero;
     });

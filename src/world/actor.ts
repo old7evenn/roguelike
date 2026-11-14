@@ -2,12 +2,22 @@ import type { Vec } from '../engine/vec';
 import type { Action } from './actions/action';
 import type { Game } from './game';
 
-/** Anything that takes turns: the hero now, monsters later. */
+/** Anything that takes turns and can fight: the hero and the monsters. */
 export abstract class Actor {
   pos: Vec;
+  hp: number;
 
-  constructor(pos: Vec) {
+  abstract readonly maxHp: number;
+  abstract readonly attack: number;
+  abstract readonly defense: number;
+
+  constructor(pos: Vec, hp: number) {
     this.pos = pos;
+    this.hp = hp;
+  }
+
+  get isAlive(): boolean {
+    return this.hp > 0;
   }
 
   /** The action for this turn, or null while waiting for player input. */

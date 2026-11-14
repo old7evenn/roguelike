@@ -1,45 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { Array2D } from '../src/engine/array2d';
 import { distanceMap } from '../src/engine/distance-map';
 import { Rng } from '../src/engine/rng';
-import { Direction, Vec } from '../src/engine/vec';
-import type { DungeonGenerator, GeneratedMap } from '../src/generation/dungeon-generator';
+import { Vec } from '../src/engine/vec';
 import { buildLevel } from '../src/generation/level';
 import { RoomsAndCorridors } from '../src/generation/rooms-and-corridors';
 import { SAFE_RADIUS, spawnMonsters } from '../src/generation/spawn-monsters';
 import { RestAction } from '../src/world/actions/rest-action';
-import { WalkAction } from '../src/world/actions/walk-action';
 import { ChaseBehavior } from '../src/world/behaviors/chase-behavior';
 import { WanderBehavior } from '../src/world/behaviors/wander-behavior';
-import { type Breed, Breeds, breedsForDepth } from '../src/world/breeds';
+import { Breeds, breedsForDepth } from '../src/world/breeds';
 import { Game } from '../src/world/game';
 import { Monster } from '../src/world/monster';
-import { Tiles, type TileType } from '../src/world/tile';
-
-/** A single walled 20×5 room with the hero starting in the left corner: easy to reason about. */
-class OpenRoom implements DungeonGenerator {
-  generate(): GeneratedMap {
-    const tiles = new Array2D<TileType>(22, 7, Tiles.wall);
-    for (let y = 1; y <= 5; y++) for (let x = 1; x <= 20; x++) tiles.set(new Vec(x, y), Tiles.floor);
-    return { tiles, start: new Vec(1, 1) };
-  }
-}
-
-/** A game in `OpenRoom` with no spawned monsters, plus `monster` placed at `pos`. */
-function gameWith(breed: Breed, pos: Vec): { game: Game; monster: Monster } {
-  const game = new Game(1, new OpenRoom());
-  for (const actor of [...game.stage.actors]) if (actor !== game.hero) game.stage.removeActor(actor);
-  const monster = new Monster(breed, pos);
-  game.stage.addActor(monster);
-  return { game, monster };
-}
-
-function rest(game: Game, turns: number): void {
-  for (let i = 0; i < turns; i++) {
-    game.hero.setNextAction(new RestAction(game.hero));
-    game.update();
-  }
-}
+import { Tiles } from '../src/world/tile';
+import { gameWith, rest } from './helpers';
 
 function monstersOf(game: Game): Monster[] {
   return game.stage.actors.filter((actor) => actor instanceof Monster);
@@ -102,20 +75,6 @@ describe('spawnMonsters', () => {
 });
 
 describe('Game with monsters', () => {
-  it('blocks the hero from walking into a monster, without spending a turn', () => {
-    const { game, monster } = gameWith(Breeds.restlessness, new Vec(2, 1));
-    const messages: string[] = [];
-    game.events.on('message', (text) => messages.push(text));
-
-    game.hero.setNextAction(new WalkAction(game.hero, Direction.east));
-    game.update();
-
-    expect(game.hero.pos).toEqual(new Vec(1, 1));
-    expect(monster.pos).toEqual(new Vec(2, 1));
-    expect(game.turns).toBe(0);
-    expect(messages).toEqual(['Прохід зайнятий.']);
-  });
-
   it('moves monsters identically for the same seed', () => {
     const positions = (seed: number) => {
       const game = new Game(seed);

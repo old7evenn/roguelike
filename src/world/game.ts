@@ -7,6 +7,7 @@ import { buildLevel } from '../generation/level';
 import { RoomsAndCorridors } from '../generation/rooms-and-corridors';
 import { spawnMonsters } from '../generation/spawn-monsters';
 import type { Action, ActionResult } from './actions/action';
+import type { Actor } from './actor';
 import { Hero } from './hero';
 import { Stage } from './stage';
 
@@ -14,9 +15,13 @@ export interface GameEvents {
   message: string;
   depthChanged: number;
   victory: { turns: number };
+  attack: { attacker: Actor; defender: Actor; damage: number };
+  /** A monster died; the hero dying is `defeat` instead. */
+  death: { actor: Actor; killer: Actor };
+  defeat: { killer: Actor };
 }
 
-export type GameStatus = 'playing' | 'won';
+export type GameStatus = 'playing' | 'won' | 'lost';
 
 /**
  * Salts for `deriveSeed`. Depths use 1…maxDepth for their maps, so play uses 0.
@@ -101,6 +106,19 @@ export class Game {
     }
     this.enterDepth(this.currentDepth + 1);
     this.events.emit('depthChanged', this.currentDepth);
+  }
+
+  kill(actor: Actor, killer: Actor): void {
+    if (actor === this.hero) {
+      this.gameStatus = 'lost';
+      this.events.emit('defeat', { killer });
+      return;
+    }
+    // Removing an actor before the current one shifts the rest left; step back
+    // with them so the next actor in line doesn't lose its turn.
+    if (this.currentStage.actors.indexOf(actor) < this.currentActor) this.currentActor--;
+    this.currentStage.removeActor(actor);
+    this.events.emit('death', { actor, killer });
   }
 
   private perform(action: Action): ActionResult {

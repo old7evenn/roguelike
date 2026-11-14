@@ -7,12 +7,22 @@ import type { Game } from './game';
 /** Per-monster state only; everything shared by its kind lives in the breed. */
 export class Monster extends Actor {
   readonly breed: Breed;
-  hp: number;
 
   constructor(breed: Breed, pos: Vec) {
-    super(pos);
+    super(pos, breed.maxHp);
     this.breed = breed;
-    this.hp = breed.maxHp;
+  }
+
+  get maxHp(): number {
+    return this.breed.maxHp;
+  }
+
+  get attack(): number {
+    return this.breed.attack;
+  }
+
+  get defense(): number {
+    return this.breed.defense;
   }
 
   override nextAction(game: Game): Action {

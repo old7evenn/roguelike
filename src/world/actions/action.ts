@@ -3,8 +3,8 @@ import type { Game } from '../game';
 
 /**
  * `alternate` lets an action hand off to a different one instead of failing:
- * walking into stairs becomes descending, and later walking into a monster
- * becomes attacking — without the input layer knowing about either.
+ * walking into stairs becomes descending and walking into an enemy becomes
+ * attacking — without the input layer knowing about either.
  */
 export type ActionResult =
   | { readonly type: 'success' }

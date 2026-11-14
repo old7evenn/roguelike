@@ -1,9 +1,8 @@
 import { ALL_DIRECTIONS, type Vec } from '../engine/vec';
-import { Monster } from '../world/monster';
 import type { Stage } from '../world/stage';
 import { type TileName, Tiles } from '../world/tile';
+import { actorGlyph } from './actor-view';
 import type { Display, Glyph } from './display';
-import { theme } from './theme';
 
 export type TileGlyphs = Record<TileName, Glyph>;
 
@@ -17,9 +16,8 @@ export function drawStage(display: Display, stage: Stage, glyphs: TileGlyphs): v
 
 export function drawActors(display: Display, stage: Stage, glyphs: TileGlyphs): void {
   for (const actor of stage.actors) {
-    const glyph = actor instanceof Monster ? theme.monsters[actor.breed.id] : theme.hero;
     // The tile's background hides the floor dot that would otherwise show through the letter.
-    display.drawGlyph(actor.pos, { ...glyph, bg: glyphs[stage.tileAt(actor.pos).name].bg });
+    display.drawGlyph(actor.pos, { ...actorGlyph(actor), bg: glyphs[stage.tileAt(actor.pos).name].bg });
   }
 }
 

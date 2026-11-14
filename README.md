@@ -57,11 +57,11 @@ flowchart LR
 | Патерн | Де | Яку проблему розв'язує |
 |---|---|---|
 | **Command** | `world/actions/*` | Хід — це об'єкт `Action`. Ігровий цикл однаково виконує дії гравця й монстрів, і нова механіка — це новий клас, а не ще одна гілка `switch`. |
-| **Alternate action** (різновид Command) | `ActionResult.alternate` | Дія може замість себе запустити іншу: крок на сходи стає спуском, а крок у монстра стане атакою. Шар введення про це не знає. |
+| **Alternate action** (різновид Command) | `ActionResult.alternate` | Дія може замість себе запустити іншу: крок на сходи стає спуском, а крок у монстра — атакою (`AttackAction`). Шар введення про це не знає. |
 | **Type Object** | `world/tile.ts`, `world/breeds.ts` | Тайл — спільний незмінний об'єкт `TileType` із властивостями (`isWalkable`, `isExit`), а не магічне число. Порода `Breed` так само зберігає все спільне для виду монстрів (HP, атака, поведінка, глибина появи), а `Monster` — лише своє: позицію й поточне HP. Новий тайл чи монстр — це новий запис, а не нові `if` чи підкласи. |
 | **Strategy** | `generation/dungeon-generator.ts`, `world/behaviors/*` | `Game` залежить тільки від інтерфейсу `DungeonGenerator`, тож BSP чи печери можна підставити без змін у грі. Монстр так само делегує вибір ходу `Behavior`: `ChaseBehavior` іде до героя по карті відстаней, `WanderBehavior` блукає. |
-| **Observer** | `engine/event-bus.ts` | Світ повідомляє, що сталося (`message`, `depthChanged`, `victory`), і не знає, хто слухає: журнал, звук чи екран. |
-| **State** | `ui/screens/*` | Кожен екран (титул, гра, перемога) сам обробляє введення і малює себе. Без `if (screen === ...)` по всьому коду. |
+| **Observer** | `engine/event-bus.ts` | Світ повідомляє, що сталося (`message`, `attack`, `death`, `defeat`, `victory`…), і не знає, хто слухає: журнал, звук чи екран. |
+| **State** | `ui/screens/*` | Кожен екран (титул, гра, перемога, поразка) сам обробляє введення і малює себе. Без `if (screen === ...)` по всьому коду. |
 | **Game Loop + Dirty Flag** | `main.ts`, `ui/ui.ts` | `requestAnimationFrame` крутиться постійно, але перемальовує тільки після змін, бо гра покрокова. |
 
 Основу взято з [Game Programming Patterns](https://gameprogrammingpatterns.com/) і доповіді Bob Nystrom [«Is There More to Game Architecture than ECS?»](https://www.youtube.com/watch?v=JxI3Eu5DPwE) (Roguelike Celebration 2018). ECS свідомо не використовую: для покрокової гри з десятками сутностей це зайва складність, і композиції з Command достатньо.
@@ -98,7 +98,7 @@ flowchart LR
 
 ### Standard — «It's a Real Roguelike»
 - [x] вороги (≥2 типи), що рухаються до гравця
-- [ ] бій «bump-to-attack», HP гравця й ворогів, смерть → екран поразки
+- [x] бій «bump-to-attack», HP гравця й ворогів, смерть → екран поразки
 - [ ] предмети: зілля, зброя; інвентар
 - [ ] журнал повідомлень
 - [ ] гру пройшла хоча б одна людина, крім мене

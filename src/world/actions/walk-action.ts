@@ -2,6 +2,7 @@ import type { Vec } from '../../engine/vec';
 import type { Actor } from '../actor';
 import type { Game } from '../game';
 import { Action, ActionResult } from './action';
+import { AttackAction } from './attack-action';
 import { DescendAction } from './descend-action';
 
 export class WalkAction extends Action {
@@ -17,7 +18,15 @@ export class WalkAction extends Action {
     const tile = game.stage.tileAt(target);
 
     if (!tile.isWalkable) return ActionResult.failure('Тут стіна.');
-    if (game.stage.actorAt(target)) return ActionResult.failure('Прохід зайнятий.');
+
+    const occupant = game.stage.actorAt(target);
+    if (occupant) {
+      // Only the hero and monsters fight each other; monsters never hurt their own.
+      const enemies = (this.actor === game.hero) !== (occupant === game.hero);
+      return enemies
+        ? ActionResult.alternate(new AttackAction(this.actor, occupant))
+        : ActionResult.failure('Прохід зайнятий.');
+    }
     if (tile.isExit && this.actor === game.hero) {
       return ActionResult.alternate(new DescendAction(this.actor));
     }
