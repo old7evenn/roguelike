@@ -3,7 +3,6 @@ import type { BreedId } from '../world/breeds';
 import type { TileName } from '../world/tile';
 import { mixColors } from './color';
 import type { Glyph } from './display';
-import type { Speaker } from './story';
 
 /** All presentation lives here; retheming the game never touches world code. */
 export const theme = {
@@ -16,10 +15,6 @@ export const theme = {
   accent: '#ffb3c7',
   stairs: '#8ef0d0',
   hero: { char: '@', fg: '#ffcf9f' } satisfies Glyph,
-  speakers: {
-    voice: '#b9a7e8',
-    hero: '#ffcf9f',
-  } satisfies Record<Speaker, string>,
   // The monsters are intrusive thoughts, so each glyph is the first letter of its Ukrainian name.
   monsters: {
     whisper: { char: 'ш', fg: '#b9a7e8' },

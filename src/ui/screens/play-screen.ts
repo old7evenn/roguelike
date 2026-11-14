@@ -9,10 +9,8 @@ import type { Display } from '../display';
 import type { Input } from '../input';
 import type { Screen } from '../screen';
 import { drawActors, drawStage } from '../stage-view';
-import { chapters } from '../story';
 import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
-import { ChapterScreen } from './chapter-screen';
 import { TitleScreen } from './title-screen';
 import { VictoryScreen } from './victory-screen';
 
@@ -36,9 +34,6 @@ export class PlayScreen implements Screen {
 
     game.events.on('message', (text) => {
       this.message = text;
-    });
-    game.events.on('depthChanged', (depth) => {
-      ui.goTo(new ChapterScreen(ui, depth, this));
     });
     game.events.on('victory', () => {
       ui.goTo(new VictoryScreen(ui, game));
@@ -79,9 +74,7 @@ export class PlayScreen implements Screen {
     const { depth, turns, seed } = this.game;
     const top = config.stageHeight;
 
-    const chapterName = chapters[depth - 1]?.name ?? '';
-
-    display.drawText(0.5, top, `Поверх ${depth}/${config.maxDepth} · ${chapterName}`, {
+    display.drawText(0.5, top, `Поверх ${depth}/${config.maxDepth}`, {
       color: tileGlyphs(depth).wall.fg,
     });
     display.drawText(display.columns - 0.5, top, `Хід ${turns} · seed ${seed}`, {
