@@ -9,8 +9,10 @@ import { spawnItems } from '../generation/spawn-items';
 import { spawnMonsters } from '../generation/spawn-monsters';
 import type { Action, ActionResult } from './actions/action';
 import type { Actor } from './actor';
+import { Boss } from './breeds';
 import { Hero } from './hero';
 import type { ItemType } from './items';
+import { Monster } from './monster';
 import { Stage } from './stage';
 
 export interface GameEvents {
@@ -23,6 +25,7 @@ export interface GameEvents {
   defeat: { killer: Actor };
   itemPickedUp: ItemType;
   itemUsed: ItemType;
+  summon: { summoner: Actor; summoned: Actor };
 }
 
 export type GameStatus = 'playing' | 'won' | 'lost';
@@ -45,6 +48,7 @@ export class Game {
 
   private readonly generatorFor: (depth: number) => DungeonGenerator;
   private currentStage!: Stage;
+  private finalBoss: Monster | null = null;
   private currentDepth = 0;
   private currentActor = 0;
   private turnCount = 0;
@@ -72,6 +76,11 @@ export class Game {
 
   get status(): GameStatus {
     return this.gameStatus;
+  }
+
+  /** Set once the hero reaches the last floor. */
+  get boss(): Monster | null {
+    return this.finalBoss;
   }
 
   /**
@@ -107,12 +116,8 @@ export class Game {
     }
   }
 
+  /** Only reachable by stairs, and the last floor has none. */
   descend(): void {
-    if (this.currentDepth >= config.maxDepth) {
-      this.gameStatus = 'won';
-      this.events.emit('victory', { turns: this.turnCount });
-      return;
-    }
     this.enterDepth(this.currentDepth + 1);
     this.events.emit('depthChanged', this.currentDepth);
   }
@@ -128,6 +133,11 @@ export class Game {
     if (this.currentStage.actors.indexOf(actor) < this.currentActor) this.currentActor--;
     this.currentStage.removeActor(actor);
     this.events.emit('death', { actor, killer });
+
+    if (actor === this.finalBoss) {
+      this.gameStatus = 'won';
+      this.events.emit('victory', { turns: this.turnCount });
+    }
   }
 
   private refreshView(): void {
@@ -142,7 +152,8 @@ export class Game {
 
   private enterDepth(depth: number): void {
     const levelSeed = deriveSeed(this.seed, depth);
-    const level = buildLevel(this.generatorFor(depth), levelSeed);
+    const isLastFloor = depth === config.maxDepth;
+    const level = buildLevel(this.generatorFor(depth), levelSeed, !isLastFloor);
     this.currentStage = new Stage(level.tiles);
     this.currentDepth = depth;
     this.currentActor = 0;
@@ -150,6 +161,10 @@ export class Game {
     // The hero goes first so the turn order starts with the player.
     this.hero.pos = level.start;
     this.currentStage.addActor(this.hero);
+    if (isLastFloor) {
+      this.finalBoss = new Monster(Boss, level.exit);
+      this.currentStage.addActor(this.finalBoss);
+    }
     for (const monster of spawnMonsters(level, depth, new Rng(deriveSeed(levelSeed, SPAWN_SALT)))) {
       this.currentStage.addActor(monster);
     }

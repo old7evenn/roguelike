@@ -1,8 +1,12 @@
+import { config } from '../config';
 import type { Behavior } from './behaviors/behavior';
+import { BossBehavior } from './behaviors/boss-behavior';
 import { ChaseBehavior } from './behaviors/chase-behavior';
 import { WanderBehavior } from './behaviors/wander-behavior';
 
-export type BreedId = 'whisper' | 'restlessness' | 'reproach' | 'memory' | 'burden';
+/** Breeds that spawn at random; the boss is placed by hand on the last floor. */
+type SpawnableBreedId = 'whisper' | 'restlessness' | 'reproach' | 'memory' | 'burden';
+export type BreedId = SpawnableBreedId | 'despair';
 
 /**
  * Type Object pattern: everything monsters of one kind share. A new monster kind
@@ -20,7 +24,7 @@ export interface Breed {
   readonly minDepth: number;
 }
 
-export const Breeds: Readonly<Record<BreedId, Breed>> = {
+export const Breeds: Readonly<Record<SpawnableBreedId, Breed>> = {
   whisper: {
     id: 'whisper',
     name: 'шепіт',
@@ -66,6 +70,17 @@ export const Breeds: Readonly<Record<BreedId, Breed>> = {
     behavior: new ChaseBehavior(8),
     minDepth: 8,
   },
+};
+
+/** The final boss, waiting at the far end of the last floor. Killing it wins the game. */
+export const Boss: Breed = {
+  id: 'despair',
+  name: 'відчай',
+  maxHp: 40,
+  attack: 6,
+  defense: 2,
+  behavior: new BossBehavior(Breeds.whisper),
+  minDepth: config.maxDepth,
 };
 
 /**

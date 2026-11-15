@@ -23,6 +23,7 @@ export const theme = {
     reproach: { char: 'д', fg: '#ff8a80' },
     memory: { char: 'с', fg: '#8fc9ff' },
     burden: { char: 'Т', fg: '#e0607e' },
+    despair: { char: 'В', fg: '#ff5c8a' },
   } satisfies Record<BreedId, Glyph>,
   // Classic roguelike shapes: '!' is something to drink, '/' something to hold.
   items: {

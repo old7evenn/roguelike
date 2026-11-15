@@ -41,6 +41,12 @@ export class PlayScreen implements Screen {
     this.say('Сходи вниз позначено >.');
 
     game.events.on('message', (text) => this.say(text));
+    game.events.on('depthChanged', (depth) => {
+      this.say(depth === config.maxDepth ? 'Сходів далі немає. Десь тут чекає відчай.' : `Поверх ${depth}.`);
+    });
+    game.events.on('summon', ({ summoner, summoned }) => {
+      this.say(`${capitalize(actorName(summoner))} кличе — з'являється ${actorName(summoned)}.`);
+    });
     game.events.on('attack', ({ attacker, defender, damage }) => {
       this.say(
         attacker === game.hero
@@ -111,17 +117,12 @@ export class PlayScreen implements Screen {
   }
 
   private renderStatusBar(display: Display): void {
-    const { depth, turns, seed, hero } = this.game;
+    const { depth, turns, seed, hero, boss, stage } = this.game;
     const top = config.stageHeight;
+    let status = `Поверх ${depth}/${config.maxDepth} · HP ${hero.hp}/${hero.maxHp} · атака ${hero.attack} · огляд ${hero.sightRadius}`;
+    if (boss && stage.isVisible(boss.pos)) status += ` · ${actorName(boss)} ${boss.hp}/${boss.maxHp}`;
 
-    display.drawText(
-      0.5,
-      top,
-      `Поверх ${depth}/${config.maxDepth} · HP ${hero.hp}/${hero.maxHp} · атака ${hero.attack} · огляд ${hero.sightRadius}`,
-      {
-        color: tileGlyphs(depth).wall.fg,
-      },
-    );
+    display.drawText(0.5, top, status, { color: tileGlyphs(depth).wall.fg });
     display.drawText(display.columns - 0.5, top, `Хід ${turns} · seed ${seed}`, {
       color: theme.dim,
       align: 'right',

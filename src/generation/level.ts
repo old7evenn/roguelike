@@ -14,23 +14,25 @@ export interface Level {
 /**
  * Generator-independent finishing: the exit goes on the reachable cell farthest
  * from the start, so every floor has to be crossed and can never softlock.
+ * Without stairs (the last floor) the exit cell stays floor: the boss stands there.
  */
-export function buildLevel(generator: DungeonGenerator, seed: number): Level {
+export function buildLevel(generator: DungeonGenerator, seed: number, hasStairs = true): Level {
   const { tiles, start } = generator.generate(new Rng(seed));
   const distances = distanceMap(tiles.width, tiles.height, start, (pos) => tiles.get(pos).isWalkable);
   const exit = farthestReachable(distances);
-  tiles.set(exit, Tiles.stairsDown);
+  if (hasStairs) tiles.set(exit, Tiles.stairsDown);
   return { tiles, start, exit };
 }
 
-/** Reachable plain floor more than `minDistance` steps from the start; stairs are excluded. */
+/** Reachable plain floor more than `minDistance` steps from the start; the exit cell is excluded. */
 export function floorAwayFromStart(level: Level, minDistance: number): Vec[] {
   const { tiles, start } = level;
   const fromStart = distanceMap(tiles.width, tiles.height, start, (pos) => tiles.get(pos).isWalkable);
   const cells: Vec[] = [];
   for (const [pos, tile] of tiles.entries()) {
     const distance = fromStart.get(pos);
-    if (tile === Tiles.floor && Number.isFinite(distance) && distance > minDistance) cells.push(pos);
+    const isFree = tile === Tiles.floor && !pos.equals(level.exit);
+    if (isFree && Number.isFinite(distance) && distance > minDistance) cells.push(pos);
   }
   return cells;
 }

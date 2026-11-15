@@ -35,9 +35,13 @@ function walkToExit(game: Game): void {
   }
 }
 
+/** Takes the stairs down to the last floor, then has the boss struck down on the spot. */
 function playThrough(seed: number): Game {
   const game = new Game(seed);
-  while (game.status === 'playing') walkToExit(game);
+  while (game.depth < config.maxDepth) walkToExit(game);
+  const { boss } = game;
+  if (!boss) throw new Error('No boss on the last floor');
+  game.kill(boss, game.hero);
   return game;
 }
 
@@ -66,7 +70,7 @@ describe('Game', () => {
     expect(depths).toEqual([2]);
   });
 
-  it(`wins after depth ${config.maxDepth}, identically for the same seed`, () => {
+  it(`wins by beating the boss on depth ${config.maxDepth}, identically for the same seed`, () => {
     const a = playThrough(1234);
     const b = playThrough(1234);
 
