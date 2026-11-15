@@ -117,7 +117,7 @@ export class PlayScreen implements Screen {
     display.drawText(
       0.5,
       top,
-      `Поверх ${depth}/${config.maxDepth} · HP ${hero.hp}/${hero.maxHp} · атака ${hero.attack}`,
+      `Поверх ${depth}/${config.maxDepth} · HP ${hero.hp}/${hero.maxHp} · атака ${hero.attack} · огляд ${hero.sightRadius}`,
       {
         color: tileGlyphs(depth).wall.fg,
       },
