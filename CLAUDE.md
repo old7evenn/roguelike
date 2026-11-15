@@ -12,6 +12,7 @@ Grading tiers: Basic → 3, Standard (+1 extension challenge) → 4, Advanced (+
 ```bash
 npm run dev     # Vite dev server
 npm test        # Vitest
+npm run balance # bot plays 200 seeded runs and reports the win rate
 npm run lint    # Biome (lint + format check); `npm run format` fixes
 npm run build   # tsc + vite build
 ```
@@ -24,10 +25,10 @@ Layers depend downward only: `ui → world/generation → engine`. `world/` must
 
 | Layer | Contents |
 |---|---|
-| `src/engine/` | Game-agnostic building blocks: `Vec`, `Rect`, `Array2D`, `Rng`, `EventBus`, `distanceMap` |
+| `src/engine/` | Game-agnostic building blocks: `Vec`, `Rect`, `Array2D`, `Rng`, `EventBus`, `distanceMap`, `fieldOfView` |
 | `src/world/` | Game model: `Game` (turn loop), `Stage`, `Actor`/`Hero`/`Monster`, `Tiles`, `Breeds`, `ItemTypes`, `actions/`, `behaviors/` |
-| `src/generation/` | `DungeonGenerator` strategy implementations, `buildLevel`, `spawnMonsters`, `spawnItems` |
-| `src/ui/` | `Display` + `CanvasDisplay`, `Ui`, `screens/`, input bindings, `theme` |
+| `src/generation/` | `DungeonGenerator` implementations (`RoomsAndCorridors`, `Caves`), `generatorForDepth`, `buildLevel`, `spawnMonsters`, `spawnItems` |
+| `src/ui/` | `Display` + `CanvasDisplay`, `Ui`, `screens/`, `MessageLog`, input bindings, `theme` |
 | `src/main.ts` | Composition root only |
 
 ### Where new things go
@@ -36,7 +37,7 @@ Layers depend downward only: `ui → world/generation → engine`. `world/` must
 - **New tile** → an entry in `Tiles` (`world/tile.ts`) plus a glyph in `ui/theme.ts`.
 - **New monster or item kind** → data in a Type Object table (`Breed`, `ItemType`), not a subclass per kind.
 - **Monster behaviour** → a Strategy object the monster delegates `nextAction` to.
-- **New generator** → implement `DungeonGenerator`; exit placement stays in `buildLevel`.
+- **New generator** → implement `DungeonGenerator` and choose it in `generatorForDepth`; exit placement stays in `buildLevel`.
 - **World → UI communication** → emit on `game.events` (add the event to `GameEvents`); never import UI from `world/`.
 - **New screen** → implement `Screen` in `ui/screens/`; navigate with `ui.goTo(...)`, or `ui.push`/`ui.pop` for an overlay drawn on top of the current screen.
 - All randomness goes through a seeded `Rng`. Never call `Math.random()` in `world/` or `generation/`; same seed must give the same run.
@@ -50,7 +51,7 @@ Layers depend downward only: `ui → world/generation → engine`. `world/` must
 - No speculative abstractions: add an interface or pattern when the current task needs it, not "for later".
 - No dead code, no commented-out code, no `any`, no non-null `!` where a real check is cheap.
 - New `world/` and `generation/` logic gets Vitest tests in `tests/`, including determinism for anything seeded.
-- Run `npm run lint && npm test && npx tsc` before declaring work done.
+- Run `npm run lint && npm test && npx tsc` before declaring work done. After changing stats, breeds or items, also run `npm run balance`.
 
 ## Git
 

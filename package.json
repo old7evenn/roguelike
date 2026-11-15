@@ -10,7 +10,7 @@
     "typecheck": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
-    "balance": "BALANCE_RUNS=200 vitest run tests/balance.test.ts",
+    "balance": "BALANCE_RUNS=200 vitest run tests/balance.test.ts --silent=false",
     "lint": "biome check .",
     "format": "biome check --write ."
   },
