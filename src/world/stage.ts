@@ -1,4 +1,5 @@
-import type { Array2D } from '../engine/array2d';
+import { Array2D } from '../engine/array2d';
+import { fieldOfView } from '../engine/field-of-view';
 import type { Vec } from '../engine/vec';
 import type { Actor } from './actor';
 import type { ItemType } from './items';
@@ -14,9 +15,15 @@ export class Stage {
   readonly tiles: Array2D<TileType>;
   readonly actors: Actor[] = [];
   readonly items: FloorItem[] = [];
+  /** Cells the hero sees right now. */
+  private visible: Array2D<boolean>;
+  /** Cells the hero has ever seen: the map they remember (fog of war). */
+  private readonly explored: Array2D<boolean>;
 
   constructor(tiles: Array2D<TileType>) {
     this.tiles = tiles;
+    this.visible = new Array2D(tiles.width, tiles.height, false);
+    this.explored = new Array2D(tiles.width, tiles.height, false);
   }
 
   get width(): number {
@@ -34,6 +41,27 @@ export class Stage {
 
   isWalkable(pos: Vec): boolean {
     return this.tileAt(pos).isWalkable;
+  }
+
+  refreshView(origin: Vec, radius: number): void {
+    this.visible = fieldOfView(
+      this.width,
+      this.height,
+      origin,
+      radius,
+      (pos) => !this.tileAt(pos).isTransparent,
+    );
+    for (const [pos, isVisible] of this.visible.entries()) {
+      if (isVisible) this.explored.set(pos, true);
+    }
+  }
+
+  isVisible(pos: Vec): boolean {
+    return this.visible.contains(pos) && this.visible.get(pos);
+  }
+
+  isExplored(pos: Vec): boolean {
+    return this.explored.contains(pos) && this.explored.get(pos);
   }
 
   addActor(actor: Actor): void {

@@ -3,12 +3,13 @@ import type { Action } from './actions/action';
 import { Actor } from './actor';
 import type { ItemType, WeaponType } from './items';
 
-export const HERO_STATS = { maxHp: 20, attack: 3, defense: 1 } as const;
+export const HERO_STATS = { maxHp: 20, attack: 3, defense: 1, sightRadius: 8 } as const;
 
 /** Controlled by the UI: input queues an action, the game loop consumes it. */
 export class Hero extends Actor {
   readonly maxHp = HERO_STATS.maxHp;
   readonly defense = HERO_STATS.defense;
+  readonly sightRadius = HERO_STATS.sightRadius;
   /** No size limit: there are only a handful of item kinds, and the screen groups duplicates. */
   readonly inventory: ItemType[] = [];
   weapon: WeaponType | null = null;

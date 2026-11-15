@@ -67,3 +67,12 @@ export function tileGlyphs(depth: number): Record<TileName, Glyph> {
     stairsDown: { char: '>', fg: theme.stairs, bg: floor.bg },
   };
 }
+
+/** How a tile looks once it's out of sight: sunk halfway into the background. */
+export function rememberedGlyph(glyph: Glyph): Glyph {
+  return {
+    char: glyph.char,
+    fg: mixColors(glyph.fg, theme.background, 0.5),
+    bg: glyph.bg && mixColors(glyph.bg, theme.background, 0.5),
+  };
+}

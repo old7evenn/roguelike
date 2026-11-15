@@ -7,11 +7,12 @@ export type TileName = 'wall' | 'floor' | 'stairsDown';
 export interface TileType {
   readonly name: TileName;
   readonly isWalkable: boolean;
+  readonly isTransparent: boolean;
   readonly isExit: boolean;
 }
 
 export const Tiles: Readonly<Record<TileName, TileType>> = {
-  wall: { name: 'wall', isWalkable: false, isExit: false },
-  floor: { name: 'floor', isWalkable: true, isExit: false },
-  stairsDown: { name: 'stairsDown', isWalkable: true, isExit: true },
+  wall: { name: 'wall', isWalkable: false, isTransparent: false, isExit: false },
+  floor: { name: 'floor', isWalkable: true, isTransparent: true, isExit: false },
+  stairsDown: { name: 'stairsDown', isWalkable: true, isTransparent: true, isExit: true },
 };

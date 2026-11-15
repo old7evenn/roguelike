@@ -9,8 +9,9 @@ import type { Behavior } from './behavior';
 
 /**
  * Walks downhill on a distance map from the hero, i.e. along a shortest path.
- * There is no field of view yet, so "senses the hero" means the hero is at most
- * `senseRadius` steps away by path — the monster hears them through the corridors.
+ * Field of view is the hero's alone: a monster "senses" the hero when they are
+ * at most `senseRadius` steps away by path, hearing them through the corridors.
+ * So a thought can creep up from the dark before the hero sees it.
  */
 export class ChaseBehavior implements Behavior {
   private readonly senseRadius: number;

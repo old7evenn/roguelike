@@ -41,7 +41,7 @@
 
 ## Етап 3 — Advanced (оцінка 5): обрати 2–3
 
-- [ ] Поле зору (recursive shadowcasting) + пам'ять досліджених клітинок (туман війни).
+- [x] Поле зору (recursive shadowcasting) + пам'ять досліджених клітинок (туман війни): `engine/field-of-view.ts`, `Stage.refreshView`.
 - [ ] Другий генератор (BSP або cellular automata для печер) і вибір генератора за глибиною через Strategy.
 - [ ] Фінальний бос на 10-му поверсі.
 - [ ] Звук через Web Audio API.

@@ -81,6 +81,8 @@ export class Game {
     while (this.gameStatus === 'playing') {
       const actor = this.currentStage.actors[this.currentActor];
       if (!actor) return;
+      // Monsters have moved since the hero last looked, so the view is refreshed before every hero turn.
+      if (actor === this.hero) this.refreshView();
 
       const action = actor.nextAction(this);
       if (!action) return;
@@ -127,6 +129,10 @@ export class Game {
     this.events.emit('death', { actor, killer });
   }
 
+  private refreshView(): void {
+    this.currentStage.refreshView(this.hero.pos, this.hero.sightRadius);
+  }
+
   private perform(action: Action): ActionResult {
     let result = action.perform(this);
     while (result.type === 'alternate') result = result.action.perform(this);
@@ -149,5 +155,6 @@ export class Game {
     for (const item of spawnItems(level, depth, new Rng(deriveSeed(levelSeed, ITEM_SALT)))) {
       this.currentStage.addItem(item);
     }
+    this.refreshView();
   }
 }
