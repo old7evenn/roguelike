@@ -4,6 +4,7 @@ import { distanceMap } from '../src/engine/distance-map';
 import { CARDINAL_DIRECTIONS, Direction, type Vec } from '../src/engine/vec';
 import { WalkAction } from '../src/world/actions/walk-action';
 import { Game } from '../src/world/game';
+import { HERO_STATS } from '../src/world/hero';
 import { clearMonsters } from './helpers';
 
 function act(game: Game, direction: Vec): void {
@@ -68,6 +69,16 @@ describe('Game', () => {
 
     expect(game.depth).toBe(2);
     expect(depths).toEqual([2]);
+  });
+
+  it('makes the hero tougher on every floor down', () => {
+    const game = new Game(7);
+    game.hero.hp = 5;
+
+    walkToExit(game);
+
+    expect(game.hero.maxHp).toBe(HERO_STATS.maxHp + HERO_STATS.maxHpPerFloor);
+    expect(game.hero.hp).toBe(5 + HERO_STATS.maxHpPerFloor);
   });
 
   it(`wins by beating the boss on depth ${config.maxDepth}, identically for the same seed`, () => {

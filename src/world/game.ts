@@ -118,6 +118,7 @@ export class Game {
 
   /** Only reachable by stairs, and the last floor has none. */
   descend(): void {
+    this.hero.growStronger();
     this.enterDepth(this.currentDepth + 1);
     this.events.emit('depthChanged', this.currentDepth);
   }

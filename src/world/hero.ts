@@ -3,14 +3,15 @@ import type { Action } from './actions/action';
 import { Actor } from './actor';
 import type { ItemType, WeaponType } from './items';
 
-export const HERO_STATS = { maxHp: 20, attack: 3, defense: 1 } as const;
+export const HERO_STATS = { maxHp: 20, attack: 3, defense: 1, maxHpPerFloor: 5 } as const;
 
 /** Sight radius at full HP and at the last HP point; see `Hero.sightRadius`. */
 export const SIGHT = { widest: 8, narrowest: 3 } as const;
 
 /** Controlled by the UI: input queues an action, the game loop consumes it. */
 export class Hero extends Actor {
-  readonly maxHp = HERO_STATS.maxHp;
+  /** Grows with every floor down; see `growStronger`. */
+  maxHp: number = HERO_STATS.maxHp;
   readonly defense = HERO_STATS.defense;
   /** No size limit: there are only a handful of item kinds, and the screen groups duplicates. */
   readonly inventory: ItemType[] = [];
@@ -24,6 +25,12 @@ export class Hero extends Actor {
 
   get attack(): number {
     return HERO_STATS.attack + (this.weapon?.attackBonus ?? 0);
+  }
+
+  /** Every floor survived toughens the hero: more max HP, and the new HP comes already filled. */
+  growStronger(): void {
+    this.maxHp += HERO_STATS.maxHpPerFloor;
+    this.hp += HERO_STATS.maxHpPerFloor;
   }
 
   /**

@@ -42,7 +42,8 @@ export class PlayScreen implements Screen {
 
     game.events.on('message', (text) => this.say(text));
     game.events.on('depthChanged', (depth) => {
-      this.say(depth === config.maxDepth ? 'Сходів далі немає. Десь тут чекає відчай.' : `Поверх ${depth}.`);
+      this.say(`Поверх ${depth}. Ти витримуєш більше: макс. HP ${game.hero.maxHp}.`);
+      if (depth === config.maxDepth) this.say('Сходів далі немає. Десь тут чекає відчай.');
     });
     game.events.on('summon', ({ summoner, summoned }) => {
       this.say(`${capitalize(actorName(summoner))} кличе — з'являється ${actorName(summoned)}.`);

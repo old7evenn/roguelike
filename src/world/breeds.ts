@@ -64,9 +64,9 @@ export const Breeds: Readonly<Record<SpawnableBreedId, Breed>> = {
   burden: {
     id: 'burden',
     name: 'тягар',
-    maxHp: 18,
-    attack: 6,
-    defense: 3,
+    maxHp: 14,
+    attack: 5,
+    defense: 2,
     behavior: new ChaseBehavior(8),
     minDepth: 8,
   },
@@ -76,9 +76,9 @@ export const Breeds: Readonly<Record<SpawnableBreedId, Breed>> = {
 export const Boss: Breed = {
   id: 'despair',
   name: 'відчай',
-  maxHp: 40,
-  attack: 6,
-  defense: 2,
+  maxHp: 32,
+  attack: 5,
+  defense: 1,
   behavior: new BossBehavior(Breeds.whisper),
   minDepth: config.maxDepth,
 };
