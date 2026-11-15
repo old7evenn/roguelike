@@ -9,6 +9,7 @@ import type { Game } from '../../world/game';
 import { actorName } from '../actor-view';
 import type { Display } from '../display';
 import type { Input } from '../input';
+import { MessageLog } from '../message-log';
 import type { Screen } from '../screen';
 import { drawActors, drawItems, drawStage } from '../stage-view';
 import { theme, tileGlyphs } from '../theme';
@@ -26,15 +27,18 @@ const WALK_DIRECTIONS: Partial<Record<Input, Vec>> = {
 };
 
 const CONTROLS_HINT = 'WASD / стрілки — рух · . — чекати · I — речі · N — нова гра';
+/** Every row under the map except the status line. */
+const LOG_LINES = config.statusRows - 1;
 
 export class PlayScreen implements Screen {
   private readonly ui: Ui;
   private readonly game: Game;
-  private message = 'Сходи вниз позначено >.';
+  private readonly log = new MessageLog(LOG_LINES);
 
   constructor(ui: Ui, game: Game) {
     this.ui = ui;
     this.game = game;
+    this.say('Сходи вниз позначено >.');
 
     game.events.on('message', (text) => this.say(text));
     game.events.on('attack', ({ attacker, defender, damage }) => {
@@ -89,14 +93,13 @@ export class PlayScreen implements Screen {
   }
 
   private act(action: Action): void {
-    this.message = '';
+    this.log.markAllOld();
     this.game.hero.setNextAction(action);
     this.game.update();
   }
 
-  /** One turn can produce several messages (a hit and the counter-hit), so they accumulate until the next input. */
   private say(text: string): void {
-    this.message = this.message ? `${this.message} ${text}` : text;
+    this.log.add(text);
   }
 
   private actionFor(input: Input): Action | null {
@@ -123,8 +126,16 @@ export class PlayScreen implements Screen {
       color: theme.dim,
       align: 'right',
     });
-    display.drawText(0.5, top + 1, this.message, { color: theme.text });
-    display.drawText(display.columns - 0.5, top + 1, CONTROLS_HINT, { color: theme.dim, align: 'right' });
+    this.log.lines.forEach((entry, i) => {
+      const count = entry.count > 1 ? ` ×${entry.count}` : '';
+      // Whatever the latest input caused stands out; older lines fade.
+      const color = entry.isNew ? theme.text : theme.dim;
+      display.drawText(0.5, top + 1 + i, `${entry.text}${count}`, { color });
+    });
+    display.drawText(display.columns - 0.5, top + LOG_LINES, CONTROLS_HINT, {
+      color: theme.faint,
+      align: 'right',
+    });
   }
 }
 
