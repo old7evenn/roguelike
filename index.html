@@ -32,10 +32,43 @@
         border: 1px solid #2e2848;
         border-radius: 6px;
       }
+      /* On-screen buttons only for touch screens, where there is no keyboard. */
+      #touch {
+        display: none;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      @media (pointer: coarse) {
+        #touch {
+          display: flex;
+        }
+      }
+      #touch button {
+        min-width: 52px;
+        min-height: 52px;
+        font: inherit;
+        font-size: 20px;
+        color: #e8dff5;
+        background: #2e2848;
+        border: none;
+        border-radius: 10px;
+      }
     </style>
   </head>
   <body>
     <canvas id="game"></canvas>
+    <div id="touch">
+      <button type="button" data-input="west" aria-label="ліворуч">←</button>
+      <button type="button" data-input="north" aria-label="вгору">↑</button>
+      <button type="button" data-input="south" aria-label="вниз">↓</button>
+      <button type="button" data-input="east" aria-label="праворуч">→</button>
+      <button type="button" data-input="rest" aria-label="чекати">·</button>
+      <button type="button" data-input="inventory" aria-label="речі">I</button>
+      <button type="button" data-input="confirm" aria-label="гаразд">OK</button>
+      <button type="button" data-input="cancel" aria-label="назад">✕</button>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

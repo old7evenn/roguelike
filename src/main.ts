@@ -1,7 +1,7 @@
 import { config } from './config';
 import { randomSeed } from './engine/rng';
 import { CanvasDisplay } from './ui/canvas-display';
-import { inputForKey } from './ui/input';
+import { inputForKey, isInput } from './ui/input';
 import { TitleScreen } from './ui/screens/title-screen';
 import { readSeedFromUrl } from './ui/seed-url';
 import { Ui } from './ui/ui';
@@ -22,6 +22,13 @@ window.addEventListener('keydown', (event) => {
   const input = inputForKey(event.code);
   if (input && ui.handleInput(input)) event.preventDefault();
 });
+
+for (const button of document.querySelectorAll<HTMLButtonElement>('#touch [data-input]')) {
+  button.addEventListener('click', () => {
+    const input = button.dataset.input;
+    if (isInput(input)) ui.handleInput(input);
+  });
+}
 
 window.addEventListener('resize', () => {
   display.resize();

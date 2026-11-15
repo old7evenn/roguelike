@@ -34,3 +34,10 @@ const KEY_BINDINGS: ReadonlyMap<string, Input> = new Map([
 export function inputForKey(code: string): Input | undefined {
   return KEY_BINDINGS.get(code);
 }
+
+const ALL_INPUTS: ReadonlySet<string> = new Set(KEY_BINDINGS.values());
+
+/** For the on-screen buttons, whose `data-input` attribute names an input directly. */
+export function isInput(value: string | undefined): value is Input {
+  return value !== undefined && ALL_INPUTS.has(value);
+}
