@@ -3,8 +3,8 @@ import { EventBus } from '../engine/event-bus';
 import { deriveSeed, Rng } from '../engine/rng';
 import { Vec } from '../engine/vec';
 import type { DungeonGenerator } from '../generation/dungeon-generator';
+import { generatorForDepth } from '../generation/generator-for-depth';
 import { buildLevel } from '../generation/level';
-import { RoomsAndCorridors } from '../generation/rooms-and-corridors';
 import { spawnItems } from '../generation/spawn-items';
 import { spawnMonsters } from '../generation/spawn-monsters';
 import type { Action, ActionResult } from './actions/action';
@@ -43,17 +43,18 @@ export class Game {
   /** Randomness during play (e.g. wandering monsters); depends on the player's moves. */
   readonly rng: Rng;
 
-  private readonly generator: DungeonGenerator;
+  private readonly generatorFor: (depth: number) => DungeonGenerator;
   private currentStage!: Stage;
   private currentDepth = 0;
   private currentActor = 0;
   private turnCount = 0;
   private gameStatus: GameStatus = 'playing';
 
-  constructor(seed: number, generator: DungeonGenerator = new RoomsAndCorridors()) {
+  /** `generatorFor` picks the map strategy for each depth; tests pass a fixed one. */
+  constructor(seed: number, generatorFor: (depth: number) => DungeonGenerator = generatorForDepth) {
     this.seed = seed;
     this.rng = new Rng(deriveSeed(seed, PLAY_SALT));
-    this.generator = generator;
+    this.generatorFor = generatorFor;
     this.enterDepth(1);
   }
 
@@ -141,7 +142,7 @@ export class Game {
 
   private enterDepth(depth: number): void {
     const levelSeed = deriveSeed(this.seed, depth);
-    const level = buildLevel(this.generator, levelSeed);
+    const level = buildLevel(this.generatorFor(depth), levelSeed);
     this.currentStage = new Stage(level.tiles);
     this.currentDepth = depth;
     this.currentActor = 0;

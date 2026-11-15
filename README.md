@@ -106,7 +106,7 @@ flowchart LR
 ### Advanced — «It Has Depth» (обрати 2–3)
 - [x] поле зору / туман війни (shadowcasting)
 - [ ] A* для ворогів
-- [ ] другий генератор: BSP або cellular automata для печер
+- [x] другий генератор: cellular automata для печер
 - [ ] фінальний бос
 - [ ] звук і музика (Web Audio)
 - [ ] рендерер на three.js як альтернативний вигляд

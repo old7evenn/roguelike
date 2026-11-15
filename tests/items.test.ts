@@ -16,7 +16,7 @@ import { clearMonsters, OpenRoom } from './helpers';
 
 /** An empty `OpenRoom`, optionally with one item lying east of the hero. */
 function emptyRoom(itemEast?: ItemType): Game {
-  const game = new Game(1, new OpenRoom());
+  const game = new Game(1, () => new OpenRoom());
   clearMonsters(game);
   for (const item of [...game.stage.items]) game.stage.removeItem(item);
   if (itemEast) game.stage.addItem({ type: itemEast, pos: new Vec(2, 1) });

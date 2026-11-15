@@ -22,7 +22,7 @@ export function clearMonsters(game: Game): void {
 
 /** A game in `OpenRoom` with no spawned monsters, plus `monster` placed at `pos`. */
 export function gameWith(breed: Breed, pos: Vec, seed = 1): { game: Game; monster: Monster } {
-  const game = new Game(seed, new OpenRoom());
+  const game = new Game(seed, () => new OpenRoom());
   clearMonsters(game);
   const monster = new Monster(breed, pos);
   game.stage.addActor(monster);

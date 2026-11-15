@@ -9,8 +9,8 @@ export interface GeneratedMap {
 }
 
 /**
- * Strategy pattern: the game depends on this interface only, so BSP or
- * cellular-automata caves can be swapped in per depth without touching it.
+ * Strategy pattern: the game depends on this interface only, and
+ * `generatorForDepth` picks rooms or caves per floor without the game knowing which.
  */
 export interface DungeonGenerator {
   generate(rng: Rng): GeneratedMap;

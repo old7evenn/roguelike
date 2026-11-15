@@ -31,7 +31,7 @@ describe('tunnel vision', () => {
   });
 
   it('shrinks the view when hurt and widens it again after healing', () => {
-    const game = new Game(1, new OpenRoom());
+    const game = new Game(1, () => new OpenRoom());
     clearMonsters(game);
     const { hero } = game;
     hero.pos = new Vec(10, 3);

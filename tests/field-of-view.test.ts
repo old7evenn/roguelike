@@ -50,7 +50,7 @@ describe('fieldOfView', () => {
 
 describe('fog of war in a game', () => {
   it('remembers explored cells after the hero walks out of sight', () => {
-    const game = new Game(1, new OpenRoom());
+    const game = new Game(1, () => new OpenRoom());
     clearMonsters(game);
     const farCorner = new Vec(20, 5);
     expect(game.stage.isVisible(game.hero.pos)).toBe(true);

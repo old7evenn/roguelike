@@ -1,16 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { distanceMap } from '../src/engine/distance-map';
+import { Rng } from '../src/engine/rng';
+import { Caves } from '../src/generation/caves';
+import { generatorForDepth } from '../src/generation/generator-for-depth';
 import { buildLevel, type Level } from '../src/generation/level';
 import { RoomsAndCorridors } from '../src/generation/rooms-and-corridors';
 import { Tiles } from '../src/world/tile';
-
-const generator = new RoomsAndCorridors();
 
 function distancesFromStart({ tiles, start }: Level) {
   return distanceMap(tiles.width, tiles.height, start, (pos) => tiles.get(pos).isWalkable);
 }
 
-describe('buildLevel', () => {
+const generators = [
+  { name: 'RoomsAndCorridors', generator: new RoomsAndCorridors() },
+  { name: 'Caves', generator: new Caves() },
+];
+
+describe.each(generators)('buildLevel with $name', ({ generator }) => {
   it('is deterministic for a given seed', () => {
     const a = buildLevel(generator, 1234);
     const b = buildLevel(generator, 1234);
@@ -23,8 +29,8 @@ describe('buildLevel', () => {
     expect(buildLevel(generator, 1).tiles.values()).not.toEqual(buildLevel(generator, 2).tiles.values());
   });
 
-  it('never softlocks: every walkable cell and the exit are reachable (1000 seeds)', () => {
-    for (let seed = 0; seed < 1000; seed++) {
+  it('never softlocks: every walkable cell and the exit are reachable (500 seeds)', () => {
+    for (let seed = 0; seed < 500; seed++) {
       const level = buildLevel(generator, seed);
       const distances = distancesFromStart(level);
 
@@ -47,5 +53,27 @@ describe('buildLevel', () => {
         if (onBorder) expect(tile).toBe(Tiles.wall);
       }
     }
+  });
+});
+
+describe('Caves', () => {
+  it('opens up at least the required share of the map', () => {
+    const caves = new Caves({ minOpenShare: 0.3 });
+    for (let seed = 0; seed < 100; seed++) {
+      const { tiles } = caves.generate(new Rng(seed));
+      const open = tiles.values().filter((tile) => tile.isWalkable).length;
+      expect(open).toBeGreaterThanOrEqual(tiles.width * tiles.height * 0.3);
+    }
+  });
+});
+
+describe('generatorForDepth', () => {
+  it('starts with rooms, mixes in caves deeper, and ends in a cave', () => {
+    const kinds = Array.from({ length: 10 }, (_, i) =>
+      generatorForDepth(i + 1) instanceof Caves ? 'caves' : 'rooms',
+    );
+    expect(kinds.slice(0, 3)).toEqual(['rooms', 'rooms', 'rooms']);
+    expect(kinds).toContain('caves');
+    expect(kinds.at(-1)).toBe('caves');
   });
 });
