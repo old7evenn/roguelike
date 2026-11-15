@@ -11,6 +11,9 @@ function distancesFromStart({ tiles, start }: Level) {
   return distanceMap(tiles.width, tiles.height, start, (pos) => tiles.get(pos).isWalkable);
 }
 
+/** These tests generate hundreds of maps; a CI runner is about twice as slow as a laptop. */
+const MANY_MAPS_TIMEOUT = 30_000;
+
 const generators = [
   { name: 'RoomsAndCorridors', generator: new RoomsAndCorridors() },
   { name: 'Caves', generator: new Caves() },
@@ -29,31 +32,44 @@ describe.each(generators)('buildLevel with $name', ({ generator }) => {
     expect(buildLevel(generator, 1).tiles.values()).not.toEqual(buildLevel(generator, 2).tiles.values());
   });
 
-  it('never softlocks: every walkable cell and the exit are reachable (500 seeds)', () => {
-    for (let seed = 0; seed < 500; seed++) {
-      const level = buildLevel(generator, seed);
-      const distances = distancesFromStart(level);
+  it(
+    'never softlocks: every walkable cell and the exit are reachable (500 seeds)',
+    () => {
+      for (let seed = 0; seed < 500; seed++) {
+        const level = buildLevel(generator, seed);
+        const distances = distancesFromStart(level);
 
-      expect(level.tiles.get(level.start)).toBe(Tiles.floor);
-      expect(level.tiles.get(level.exit)).toBe(Tiles.stairsDown);
-      expect(distances.get(level.exit)).toBeGreaterThan(0);
+        expect(level.tiles.get(level.start)).toBe(Tiles.floor);
+        expect(level.tiles.get(level.exit)).toBe(Tiles.stairsDown);
+        expect(distances.get(level.exit)).toBeGreaterThan(0);
 
-      for (const [pos, tile] of level.tiles.entries()) {
-        if (tile.isWalkable) expect(distances.get(pos), `seed ${seed} at ${pos}`).not.toBe(Infinity);
+        // One expect per seed, not per cell: hundreds of thousands of expects make the test slow.
+        const unreachable = [...level.tiles.entries()]
+          .filter(([pos, tile]) => tile.isWalkable && !Number.isFinite(distances.get(pos)))
+          .map(([pos]) => `${pos}`);
+        expect(unreachable, `seed ${seed}`).toEqual([]);
       }
-    }
-  });
+    },
+    MANY_MAPS_TIMEOUT,
+  );
 
-  it('keeps a solid border around the map', () => {
-    for (let seed = 0; seed < 200; seed++) {
-      const { tiles } = buildLevel(generator, seed);
-      for (const [pos, tile] of tiles.entries()) {
-        const onBorder =
-          pos.x === 0 || pos.y === 0 || pos.x === tiles.width - 1 || pos.y === tiles.height - 1;
-        if (onBorder) expect(tile).toBe(Tiles.wall);
+  it(
+    'keeps a solid border around the map',
+    () => {
+      for (let seed = 0; seed < 200; seed++) {
+        const { tiles } = buildLevel(generator, seed);
+        const openBorder = [...tiles.entries()]
+          .filter(([pos, tile]) => {
+            const onBorder =
+              pos.x === 0 || pos.y === 0 || pos.x === tiles.width - 1 || pos.y === tiles.height - 1;
+            return onBorder && tile !== Tiles.wall;
+          })
+          .map(([pos]) => `${pos}`);
+        expect(openBorder, `seed ${seed}`).toEqual([]);
       }
-    }
-  });
+    },
+    MANY_MAPS_TIMEOUT,
+  );
 });
 
 describe('Caves', () => {

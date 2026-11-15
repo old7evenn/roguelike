@@ -1,8 +1,7 @@
 import { config } from '../config';
 import { Array2D } from '../engine/array2d';
-import { distanceMap } from '../engine/distance-map';
 import type { Rng } from '../engine/rng';
-import { ALL_DIRECTIONS, type Vec } from '../engine/vec';
+import { ALL_DIRECTIONS, CARDINAL_DIRECTIONS, type Vec } from '../engine/vec';
 import { Tiles, type TileType } from '../world/tile';
 import type { DungeonGenerator, GeneratedMap } from './dungeon-generator';
 
@@ -92,20 +91,31 @@ function rockNeighbours(tiles: Array2D<TileType>, pos: Vec): number {
 
 /** Flood-fills every open region and returns the cells of the biggest one. */
 function largestRegion(tiles: Array2D<TileType>): Vec[] {
+  // Shared by all regions, so each cell is visited once in total, not once per region.
   const seen = new Array2D(tiles.width, tiles.height, false);
   let largest: Vec[] = [];
 
   for (const [pos, tile] of tiles.entries()) {
     if (!tile.isWalkable || seen.get(pos)) continue;
-
-    const distances = distanceMap(tiles.width, tiles.height, pos, (cell) => tiles.get(cell).isWalkable);
-    const region: Vec[] = [];
-    for (const [cell, distance] of distances.entries()) {
-      if (!Number.isFinite(distance)) continue;
-      region.push(cell);
-      seen.set(cell, true);
-    }
+    const region = floodFill(tiles, pos, seen);
     if (region.length > largest.length) largest = region;
   }
-  return largest;
+  // Row-major order, so the seeded `rng.pick` of a start cell doesn't depend on how the fill walked.
+  return largest.sort((a, b) => a.y - b.y || a.x - b.x);
+}
+
+/** Breadth-first walk over the open cells connected to `origin`; the result doubles as the queue. */
+function floodFill(tiles: Array2D<TileType>, origin: Vec, seen: Array2D<boolean>): Vec[] {
+  seen.set(origin, true);
+  const region = [origin];
+  for (let head = 0; head < region.length; head++) {
+    const current = region[head] as Vec;
+    for (const direction of CARDINAL_DIRECTIONS) {
+      const next = current.add(direction);
+      if (!tiles.contains(next) || seen.get(next) || !tiles.get(next).isWalkable) continue;
+      seen.set(next, true);
+      region.push(next);
+    }
+  }
+  return region;
 }
