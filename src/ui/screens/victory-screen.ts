@@ -40,7 +40,7 @@ export class VictoryScreen implements Screen {
     for (let i = 0; i < GROUND_WIDTH; i++) {
       display.drawGlyph(new Vec(left + i, 16), { char: '', fg: wall.fg, bg: wall.fg });
     }
-    display.drawGlyph(new Vec(Math.floor(centerX), 15), theme.hero);
+    display.drawSprite(new Vec(Math.floor(centerX), 15), theme.hero);
 
     display.drawText(centerX, 20, summary, { color: theme.text, scale: 1.25, align: 'center' });
     display.drawText(centerX, 22, `seed ${this.game.seed}`, { color: theme.dim, align: 'center' });

@@ -1,7 +1,9 @@
 import { ALL_DIRECTIONS, type Vec } from '../engine/vec';
+import { Monster } from '../world/monster';
 import type { Stage } from '../world/stage';
 import { type TileName, Tiles } from '../world/tile';
-import { actorGlyph } from './actor-view';
+import { actorSprite } from './actor-view';
+import { mixColors } from './color';
 import type { Display, Glyph } from './display';
 import { rememberedGlyph, theme } from './theme';
 
@@ -19,19 +21,37 @@ export function drawStage(display: Display, stage: Stage, glyphs: TileGlyphs): v
 }
 
 /** Items and actors move or vanish, so only the ones in sight are drawn. */
-export function drawItems(display: Display, stage: Stage, glyphs: TileGlyphs): void {
+export function drawItems(display: Display, stage: Stage): void {
   for (const { type, pos } of stage.items) {
-    if (!stage.isVisible(pos)) continue;
-    display.drawGlyph(pos, { ...theme.items[type.id], bg: glyphs[stage.tileAt(pos).name].bg });
+    if (stage.isVisible(pos)) display.drawSprite(pos, theme.items[type.id]);
   }
 }
 
-export function drawActors(display: Display, stage: Stage, glyphs: TileGlyphs): void {
+export function drawActors(display: Display, stage: Stage): void {
   for (const actor of stage.actors) {
     if (!stage.isVisible(actor.pos)) continue;
-    // The tile's background hides the floor dot that would otherwise show through the letter.
-    display.drawGlyph(actor.pos, { ...actorGlyph(actor), bg: glyphs[stage.tileAt(actor.pos).name].bg });
+    display.drawSprite(actor.pos, actorSprite(actor));
+    // Only wounded monsters get a bar: a full one on every ghost would be noise.
+    if (actor instanceof Monster && actor.hp < actor.maxHp) {
+      drawHealthBar(display, actor.pos.x + 0.1, actor.pos.y + 0.9, 0.8, actor.hp / actor.maxHp);
+    }
   }
+}
+
+export function drawHealthBar(
+  display: Display,
+  x: number,
+  y: number,
+  width: number,
+  health: number,
+  height = 0.14,
+): void {
+  display.fillRect(x, y, width, height, theme.background);
+  display.fillRect(x, y, width * health, height, healthColor(health));
+}
+
+function healthColor(health: number): string {
+  return mixColors(theme.hpLow, theme.hpFull, health);
 }
 
 function bordersOpenSpace(stage: Stage, pos: Vec): boolean {

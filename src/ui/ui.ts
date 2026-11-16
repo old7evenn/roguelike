@@ -1,3 +1,4 @@
+import type { Vec } from '../engine/vec';
 import type { Display } from './display';
 import type { Input } from './input';
 import type { Screen } from './screen';
@@ -37,6 +38,14 @@ export class Ui {
     const handled = this.screens.at(-1)?.handleInput(input) ?? false;
     if (handled) this.dirty = true;
     return handled;
+  }
+
+  hover(cell: Vec | null): void {
+    if (this.screens.at(-1)?.hover?.(cell)) this.dirty = true;
+  }
+
+  click(cell: Vec): void {
+    if (this.screens.at(-1)?.click?.(cell)) this.dirty = true;
   }
 
   invalidate(): void {

@@ -64,7 +64,7 @@ function drawStaircase(display: Display, left: number, top: number): void {
       display.drawGlyph(new Vec(x, y), { char: '', fg: wall.fg, bg: wall.fg });
     }
   }
-  display.drawGlyph(new Vec(left + 1, top - 1), theme.hero);
+  display.drawSprite(new Vec(left + 1, top - 1), theme.hero);
   const bottom = top + config.maxDepth - 1;
   display.drawGlyph(new Vec(left + config.maxDepth * STEP_WIDTH, bottom), {
     char: '>',

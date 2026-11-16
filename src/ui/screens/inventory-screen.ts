@@ -3,6 +3,7 @@ import type { Hero } from '../../world/hero';
 import type { ItemType } from '../../world/items';
 import type { Display } from '../display';
 import type { Input } from '../input';
+import { describeItem } from '../item-view';
 import type { Screen } from '../screen';
 import { theme } from '../theme';
 import type { Ui } from '../ui';
@@ -69,7 +70,7 @@ export class InventoryScreen implements Screen {
       scale: 1.25,
       align: 'center',
     });
-    display.drawText(textLeft, top + 2.5, `У руках: ${weapon ? describe(weapon) : 'нічого'}`, {
+    display.drawText(textLeft, top + 2.5, `У руках: ${weapon ? describeItem(weapon) : 'нічого'}`, {
       color: theme.dim,
     });
 
@@ -82,7 +83,7 @@ export class InventoryScreen implements Screen {
       display.drawText(
         textLeft,
         top + HEADER_ROWS + i,
-        `${isSelected ? '›' : ' '} ${describe(entry.type)}${count}`,
+        `${isSelected ? '›' : ' '} ${describeItem(entry.type)}${count}`,
         {
           color: isSelected ? theme.text : theme.dim,
         },
@@ -101,12 +102,6 @@ function groupItems(items: readonly ItemType[]): Entry[] {
   const counts = new Map<ItemType, number>();
   for (const item of items) counts.set(item, (counts.get(item) ?? 0) + 1);
   return [...counts].map(([type, count]) => ({ type, count }));
-}
-
-function describe(item: ItemType): string {
-  return item.kind === 'potion'
-    ? `${item.name} (+${item.heal} HP)`
-    : `${item.name} (+${item.attackBonus} до атаки)`;
 }
 
 function drawPanel(display: Display, left: number, top: number, height: number): void {

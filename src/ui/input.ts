@@ -5,6 +5,8 @@ export type Input =
   | 'east'
   | 'west'
   | 'rest'
+  | 'explore'
+  | 'stairs'
   | 'confirm'
   | 'cancel'
   | 'inventory'
@@ -23,7 +25,14 @@ const KEY_BINDINGS: ReadonlyMap<string, Input> = new Map([
   ['KeyS', 'south'],
   ['KeyA', 'west'],
   ['KeyD', 'east'],
+  ['Numpad8', 'north'],
+  ['Numpad2', 'south'],
+  ['Numpad4', 'west'],
+  ['Numpad6', 'east'],
   ['Period', 'rest'],
+  ['Numpad5', 'rest'],
+  ['KeyX', 'explore'],
+  ['KeyE', 'stairs'],
   ['Enter', 'confirm'],
   ['Space', 'confirm'],
   ['Escape', 'cancel'],

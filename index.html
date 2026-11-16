@@ -24,10 +24,13 @@
         color: #e8dff5;
         font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
       }
+      /* As large as the window allows; --aspect (columns / rows) comes from CanvasDisplay. */
       #game {
         display: block;
-        width: min(100%, 1280px);
+        width: min(100%, calc((100dvh - 32px) * var(--aspect, 2)));
         height: auto;
+        cursor: crosshair;
+        touch-action: manipulation;
         image-rendering: pixelated;
         border: 1px solid #2e2848;
         border-radius: 6px;
@@ -65,6 +68,8 @@
       <button type="button" data-input="south" aria-label="вниз">↓</button>
       <button type="button" data-input="east" aria-label="праворуч">→</button>
       <button type="button" data-input="rest" aria-label="чекати">·</button>
+      <button type="button" data-input="explore" aria-label="дослідити">X</button>
+      <button type="button" data-input="stairs" aria-label="до сходів">&gt;</button>
       <button type="button" data-input="inventory" aria-label="речі">I</button>
       <button type="button" data-input="confirm" aria-label="гаразд">OK</button>
       <button type="button" data-input="cancel" aria-label="назад">✕</button>

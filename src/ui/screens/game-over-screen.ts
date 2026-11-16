@@ -2,7 +2,7 @@ import { randomSeed } from '../../engine/rng';
 import { Vec } from '../../engine/vec';
 import type { Actor } from '../../world/actor';
 import type { Game } from '../../world/game';
-import { actorGlyph, actorName } from '../actor-view';
+import { actorName, actorSprite } from '../actor-view';
 import type { Display } from '../display';
 import type { Input } from '../input';
 import type { Screen } from '../screen';
@@ -43,7 +43,7 @@ export class GameOverScreen implements Screen {
     drawStars(display, seed, new Set([...rowRange(7, 11), 15, 18, 20, 23]));
 
     display.drawText(centerX, 9, 'НЕ СЬОГОДНІ', { color: theme.accent, scale: 3, align: 'center' });
-    display.drawGlyph(new Vec(Math.floor(centerX), 15), actorGlyph(this.killer));
+    display.drawSprite(new Vec(Math.floor(centerX), 15), { ...actorSprite(this.killer), size: 1.6 });
     display.drawText(centerX, 18, `Тебе здолав ${actorName(this.killer)}.`, {
       color: theme.text,
       scale: 1.25,
