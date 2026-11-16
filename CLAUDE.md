@@ -1,11 +1,11 @@
 # Roguelike — project instructions
 
 Semester project for a university JavaScript course: [Lab 26 — Procedural Roguelike](https://github.com/rmalkevy/Programming-Practice-Projects/blob/main/labs/lab-26-procedural-roguelike.md).
-Solo work, one final defense: 5-minute live demo plus questions. **The author must be able to explain and modify any line live**, so prefer plain, readable code over clever code.
+One author (old7evenn) plus a friend contributing through pull requests; one final defense: 5-minute live demo plus questions. **The author must be able to explain and modify any line live**, so prefer plain, readable code over clever code.
 
 Grading tiers: Basic → 3, Standard (+1 extension challenge) → 4, Advanced (+side quest, public deploy) → 5.
 
-**What to do next:** [docs/ROADMAP.md](docs/ROADMAP.md). Take the first unchecked task, finish it, then tick it off there and in the README checklist.
+**What to do next:** the author works from [docs/ROADMAP.md](docs/ROADMAP.md): take the first unchecked task, finish it, then tick it off there and in the README checklist. A contributor who is not the author takes a task from [docs/TASKS.md](docs/TASKS.md) instead.
 
 ## Commands
 
@@ -17,7 +17,7 @@ npm run lint    # Biome (lint + format check); `npm run format` fixes
 npm run build   # tsc + vite build
 ```
 
-CI (`.github/workflows/deploy.yml`) runs lint, tests, and build, then deploys `main` to GitHub Pages: https://old7evenn.github.io/roguelike/
+CI (`.github/workflows/deploy.yml`) runs lint, tests, and build on every pull request and on `main`, and deploys only `main` to GitHub Pages: https://old7evenn.github.io/roguelike/
 
 ## Architecture
 
@@ -57,3 +57,4 @@ Layers depend downward only: `ui → world/generation → engine`. `world/` must
 
 - Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `build:`, `ci:`, `chore:`). Split unrelated changes into separate commits.
 - Commit and push only when the author asks: pushing to `main` deploys.
+- Contributors never push to `main`: one branch per task from fresh `main` (`feat/sound`), push it, open a PR, and the author merges after review. Commit under the contributor's own git identity so the history shows who did what.
