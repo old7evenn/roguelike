@@ -35,7 +35,7 @@ Layers depend downward only: `ui → world/generation → engine`. `world/` must
 
 - **New thing an actor can do** → a new `Action` subclass in `world/actions/`. If it's triggered by bumping (attack, open door), return `ActionResult.alternate(...)` from `WalkAction` instead of adding input-layer branches.
 - **New tile** → an entry in `Tiles` (`world/tile.ts`) plus a glyph in `ui/theme.ts`.
-- **New monster or item kind** → data in a Type Object table (`Breed`, `ItemType`), not a subclass per kind.
+- **New monster or item kind** → data in a Type Object table (`Breed`, `ItemType`), not a subclass per kind. Its look is a `Sprite` in `ui/theme.ts` (`monsters` / `items`; a monster also gets a line in `monsterNotes`).
 - **Monster behaviour** → a Strategy object the monster delegates `nextAction` to.
 - **New generator** → implement `DungeonGenerator` and choose it in `generatorForDepth`; exit placement stays in `buildLevel`.
 - **World → UI communication** → emit on `game.events` (add the event to `GameEvents`); never import UI from `world/`.
