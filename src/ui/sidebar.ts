@@ -22,6 +22,7 @@ const CONTROLS: readonly (readonly [key: string, action: string])[] = [
   ['E', 'до сходів'],
   ['.', 'чекати хід'],
   ['I', 'речі'],
+  ['M', 'звук'],
   ['N', 'нова гра'],
 ];
 
@@ -30,13 +31,13 @@ const CONTROLS: readonly (readonly [key: string, action: string])[] = [
  * are, what lies around, what is under the pointer, and the keys. The map shows
  * where things are, the panel says what they are.
  */
-export function drawSidebar(display: Display, game: Game, hovered: Vec | null): void {
+export function drawSidebar(display: Display, game: Game, hovered: Vec | null, soundEnabled: boolean): void {
   display.fillRect(config.stageWidth, 0, config.sidebarWidth, display.rows, theme.panel);
   let y = drawHero(display, game, 0.5);
   y = drawMonsters(display, game, y + 1);
   y = drawSights(display, game, y + 1);
   if (hovered) drawHovered(display, game, hovered, y + 1);
-  drawControls(display);
+  drawControls(display, soundEnabled);
 }
 
 function drawHero(display: Display, game: Game, top: number): number {
@@ -134,12 +135,13 @@ function describeCell(game: Game, pos: Vec): string[] {
   return stage.isVisible(pos) ? [what] : [what, "з пам'яті: що там зараз, не видно"];
 }
 
-function drawControls(display: Display): void {
+function drawControls(display: Display, soundEnabled: boolean): void {
   const top = display.rows - CONTROLS.length - 1.5;
   drawHeading(display, top, 'КЕРУВАННЯ');
   CONTROLS.forEach(([key, action], i) => {
     display.drawText(LEFT, top + 1 + i, key, { color: theme.text });
-    display.drawText(RIGHT, top + 1 + i, action, { color: theme.dim, align: 'right' });
+    const label = key === 'M' ? `звук: ${soundEnabled ? 'увімк.' : 'вимк.'}` : action;
+    display.drawText(RIGHT, top + 1 + i, label, { color: theme.dim, align: 'right' });
   });
 }
 
