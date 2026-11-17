@@ -17,10 +17,12 @@ import { MessageLog } from '../message-log';
 import type { Screen } from '../screen';
 import { drawSidebar } from '../sidebar';
 import { drawActors, drawItems, drawStage } from '../stage-view';
+import { interludeForDepth } from '../story';
 import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
 import { GameOverScreen } from './game-over-screen';
 import { HelpScreen } from './help-screen';
+import { InterludeScreen } from './interlude-screen';
 import { InventoryScreen } from './inventory-screen';
 import { TitleScreen } from './title-screen';
 import { VictoryScreen } from './victory-screen';
@@ -103,6 +105,8 @@ export class PlayScreen implements Screen {
     game.events.on('depthChanged', (depth) => {
       this.say(`Поверх ${depth}. Ти витримуєш більше: макс. HP ${game.hero.maxHp}.`);
       if (depth === config.maxDepth) this.say('Сходів далі немає. Десь тут чекає відчай.');
+      const interlude = interludeForDepth(depth);
+      if (interlude) ui.goTo(new InterludeScreen(ui, game.seed, interlude, this));
     });
     game.events.on('summon', ({ summoner, summoned }) => {
       this.say(`${capitalize(actorName(summoner))} кличе — з'являється ${actorName(summoned)}.`);

@@ -7,8 +7,10 @@ import type { Input } from '../input';
 import type { Screen } from '../screen';
 import { writeSeedToUrl } from '../seed-url';
 import { drawStars, rowRange } from '../starfield';
+import { interludeForDepth } from '../story';
 import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
+import { InterludeScreen } from './interlude-screen';
 import { PlayScreen } from './play-screen';
 
 const STEP_WIDTH = 3;
@@ -29,7 +31,7 @@ export class TitleScreen implements Screen {
   handleInput(input: Input): boolean {
     switch (input) {
       case 'confirm':
-        this.ui.goTo(new PlayScreen(this.ui, new Game(this.seed)));
+        this.startGame();
         return true;
       case 'newGame':
         this.ui.goTo(new TitleScreen(this.ui, randomSeed()));
@@ -37,6 +39,12 @@ export class TitleScreen implements Screen {
       default:
         return false;
     }
+  }
+
+  private startGame(): void {
+    const play = new PlayScreen(this.ui, new Game(this.seed));
+    const interlude = interludeForDepth(1);
+    this.ui.goTo(interlude ? new InterludeScreen(this.ui, this.seed, interlude, play) : play);
   }
 
   render(display: Display): void {

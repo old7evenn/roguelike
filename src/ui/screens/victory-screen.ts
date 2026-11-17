@@ -8,6 +8,8 @@ import { defeatedMonsterLines } from '../run-summary';
 import type { Screen } from '../screen';
 import { urlForSeed } from '../seed-url';
 import { drawStars, rowRange } from '../starfield';
+import { endingLines } from '../story';
+import { drawStoryLines, storyRows } from '../story-view';
 import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
 import { TitleScreen } from './title-screen';
@@ -35,7 +37,8 @@ export class VictoryScreen implements Screen {
     const { seed, turns } = this.game;
     const summary = `${config.maxDepth} поверхів · ${turns} ходів · seed ${seed}`;
     const defeated = defeatedMonsterLines(this.game);
-    drawStars(display, seed, new Set([...rowRange(5, 9), 18, 20, 21, 22, 25, 28]));
+    const textRows = [...rowRange(5, 9), ...storyRows(endingLines, 17), 23, 25, 26, 27, 30, 33];
+    drawStars(display, seed, new Set(textRows));
 
     display.drawText(centerX, 7, 'ТИ НА ДНІ', { color: theme.accent, scale: 3, align: 'center' });
 
@@ -46,12 +49,13 @@ export class VictoryScreen implements Screen {
     }
     display.drawSprite(new Vec(Math.floor(centerX), 13), theme.hero);
 
-    display.drawText(centerX, 18, summary, { color: theme.text, scale: 1.25, align: 'center' });
-    display.drawText(centerX, 20, 'ПОДОЛАНО', { color: theme.accent, scale: 0.85, align: 'center' });
+    drawStoryLines(display, endingLines, 17);
+    display.drawText(centerX, 23, summary, { color: theme.text, scale: 1.25, align: 'center' });
+    display.drawText(centerX, 25, 'ПОДОЛАНО', { color: theme.accent, scale: 0.85, align: 'center' });
     defeated.forEach((line, index) => {
-      display.drawText(centerX, 21 + index, line, { color: theme.text, align: 'center' });
+      display.drawText(centerX, 26 + index, line, { color: theme.text, align: 'center' });
     });
-    display.drawText(centerX, 25, urlForSeed(seed), { color: theme.stairs, align: 'center' });
-    display.drawText(centerX, 28, 'Enter — ще одна ніч', { color: theme.text, align: 'center' });
+    display.drawText(centerX, 30, urlForSeed(seed), { color: theme.stairs, align: 'center' });
+    display.drawText(centerX, 33, 'Enter — ще одна ніч', { color: theme.text, align: 'center' });
   }
 }
