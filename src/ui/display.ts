@@ -24,6 +24,8 @@ export interface TextStyle {
   /** Multiplier of the cell font size. */
   scale?: number;
   align?: 'left' | 'center' | 'right';
+  /** 0 is invisible, 1 (the default) is opaque: lets effects fade out. */
+  alpha?: number;
 }
 
 /**
@@ -36,8 +38,8 @@ export interface Display {
   readonly rows: number;
   clear(): void;
   drawGlyph(pos: Vec, glyph: Glyph): void;
-  /** Centred in the cell at `pos`. */
-  drawSprite(pos: Vec, sprite: Sprite): void;
+  /** Centred in the cell at `pos`; `alpha` below 1 makes it see-through. */
+  drawSprite(pos: Vec, sprite: Sprite, alpha?: number): void;
   drawText(x: number, y: number, text: string, style: TextStyle): void;
   fillRect(x: number, y: number, width: number, height: number, color: string): void;
   strokeRect(x: number, y: number, width: number, height: number, color: string): void;

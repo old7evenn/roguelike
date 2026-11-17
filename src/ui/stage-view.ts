@@ -1,4 +1,5 @@
 import { ALL_DIRECTIONS, type Vec } from '../engine/vec';
+import type { Actor } from '../world/actor';
 import { Monster } from '../world/monster';
 import type { Stage } from '../world/stage';
 import { type TileName, Tiles } from '../world/tile';
@@ -27,13 +28,15 @@ export function drawItems(display: Display, stage: Stage): void {
   }
 }
 
-export function drawActors(display: Display, stage: Stage): void {
+/** `positionOf` says where to draw each actor, which differs from its cell while it is animated. */
+export function drawActors(display: Display, stage: Stage, positionOf: (actor: Actor) => Vec): void {
   for (const actor of stage.actors) {
     if (!stage.isVisible(actor.pos)) continue;
-    display.drawSprite(actor.pos, actorSprite(actor));
+    const pos = positionOf(actor);
+    display.drawSprite(pos, actorSprite(actor));
     // Only wounded monsters get a bar: a full one on every ghost would be noise.
     if (actor instanceof Monster && actor.hp < actor.maxHp) {
-      drawHealthBar(display, actor.pos.x + 0.1, actor.pos.y + 0.9, 0.8, actor.hp / actor.maxHp);
+      drawHealthBar(display, pos.x + 0.1, pos.y + 0.9, 0.8, actor.hp / actor.maxHp);
     }
   }
 }

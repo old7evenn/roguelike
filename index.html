@@ -57,6 +57,14 @@
         background: #2e2848;
         border: none;
         border-radius: 10px;
+        /* Holding a button walks: no double-tap zoom, text selection or long-press menu in the way. */
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      #touch button:active {
+        background: #4a3f70;
       }
     </style>
   </head>
@@ -71,6 +79,7 @@
       <button type="button" data-input="explore" aria-label="дослідити">X</button>
       <button type="button" data-input="stairs" aria-label="до сходів">&gt;</button>
       <button type="button" data-input="inventory" aria-label="речі">I</button>
+      <button type="button" data-input="pause" aria-label="пауза">⏸</button>
       <button type="button" data-input="sound" aria-label="увімкнути або вимкнути звук">M</button>
       <button type="button" data-input="help" aria-label="довідка">?</button>
       <button type="button" data-input="confirm" aria-label="гаразд">OK</button>

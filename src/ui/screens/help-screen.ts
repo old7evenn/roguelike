@@ -9,11 +9,12 @@ const WIDTH = 58;
 const HEIGHT = 29;
 
 const CONTROLS: readonly (readonly [key: string, action: string])[] = [
-  ['WASD / стрілки / numpad', 'крок; у монстра — удар'],
+  ['WASD / стрілки / numpad', 'крок; утримуй — іти; у монстра — удар'],
   ['клік / тап', 'іти в обрану клітинку'],
   ['X', 'дослідити поверх'],
   ['E', 'іти до видимих сходів'],
   ['.', 'пропустити хід'],
+  ['P', 'пауза (Esc теж знімає)'],
   ['I', 'відкрити речі'],
   ['N', 'почати новий забіг'],
   ['H / ?', 'відкрити або закрити довідку'],
@@ -48,6 +49,9 @@ export class HelpScreen implements Screen {
     this.drawControls(display, left, top + 3);
     this.drawMapLegend(display, left, top + 14);
 
+    display.drawText(left + 3, top + 22, 'Час іде сам: стоїш — монстри однаково ходять.', {
+      color: theme.dim,
+    });
     display.drawText(left + 3, top + 23, 'Менше HP — менший радіус огляду.', { color: theme.dim });
     display.drawText(left + 3, top + 24, 'Автохід зупиниться, щойно з’явиться монстр.', { color: theme.dim });
     display.drawText(left + WIDTH / 2, top + HEIGHT - 2, 'Esc / H / ? — закрити', {

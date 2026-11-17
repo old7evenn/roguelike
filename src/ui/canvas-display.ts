@@ -65,13 +65,14 @@ export class CanvasDisplay implements Display {
     context.fillText(glyph.char, left + cellSize / 2, top + cellSize / 2 + 1);
   }
 
-  drawSprite(pos: Vec, sprite: Sprite): void {
+  drawSprite(pos: Vec, sprite: Sprite, alpha = 1): void {
     const { context, cellSize } = this;
     const x = (pos.x + 0.5) * cellSize;
     const y = (pos.y + 0.5) * cellSize;
     const r = (sprite.size * cellSize) / 2;
 
     context.save();
+    context.globalAlpha = alpha;
     context.fillStyle = sprite.color;
     context.strokeStyle = theme.background;
     context.lineWidth = Math.max(1, cellSize / 12);
@@ -103,7 +104,9 @@ export class CanvasDisplay implements Display {
     context.font = this.font(style.scale ?? 1);
     context.textAlign = style.align ?? 'left';
     context.fillStyle = style.color;
+    context.globalAlpha = style.alpha ?? 1;
     context.fillText(text, x * cellSize, (y + 0.5) * cellSize);
+    context.globalAlpha = 1;
   }
 
   fillRect(x: number, y: number, width: number, height: number, color: string): void {

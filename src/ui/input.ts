@@ -12,7 +12,11 @@ export type Input =
   | 'inventory'
   | 'sound'
   | 'help'
+  | 'pause'
   | 'newGame';
+
+/** Inputs that mean something when repeated by holding the key: walking, scrolling a list. */
+export const DIRECTION_INPUTS: readonly Input[] = ['north', 'south', 'east', 'west'];
 
 /**
  * Keyed by `KeyboardEvent.code` (physical key), not `.key`,
@@ -42,6 +46,7 @@ const KEY_BINDINGS: ReadonlyMap<string, Input> = new Map([
   ['KeyM', 'sound'],
   ['KeyH', 'help'],
   ['Slash', 'help'],
+  ['KeyP', 'pause'],
   ['KeyN', 'newGame'],
 ]);
 

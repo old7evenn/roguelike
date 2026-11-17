@@ -19,20 +19,39 @@ const ui = new Ui(display);
 ui.goTo(new TitleScreen(ui, readSeedFromUrl() ?? randomSeed()));
 
 window.addEventListener('keydown', (event) => {
+  // macOS sends no keyup for keys released while Cmd is down, so Cmd lets go of everything.
+  if (event.key === 'Meta') ui.blur();
+  if (event.metaKey || event.ctrlKey || event.altKey) return;
   const input = inputForKey(event.code);
   if (!input) return;
   ui.sound.unlock();
-  if (ui.handleInput(input)) event.preventDefault();
+  if (ui.press(input, event.repeat)) event.preventDefault();
 });
 
+window.addEventListener('keyup', (event) => {
+  const input = inputForKey(event.code);
+  if (input) ui.release(input);
+});
+
+// Keyups never arrive while the window is in the background, and the monsters shouldn't keep walking either.
+window.addEventListener('blur', () => ui.blur());
+
+// On-screen buttons act on press, not on click, and holding an arrow walks like holding a key.
 for (const button of document.querySelectorAll<HTMLButtonElement>('#touch [data-input]')) {
-  button.addEventListener('click', () => {
-    const input = button.dataset.input;
-    if (isInput(input)) {
-      ui.sound.unlock();
-      ui.handleInput(input);
-    }
+  const input = button.dataset.input;
+  if (!isInput(input)) continue;
+  button.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    ui.sound.unlock();
+    ui.press(input, false);
   });
+  for (const type of ['pointerup', 'pointercancel', 'pointerleave'] as const) {
+    button.addEventListener(type, () => {
+      // Touch counts as a user gesture only on release, so audio is unlocked here too.
+      ui.sound.unlock();
+      ui.release(input);
+    });
+  }
 }
 
 // Pointer events cover both the mouse and touch: hovering inspects a cell, a click or tap walks there.
@@ -49,9 +68,9 @@ window.addEventListener('resize', () => {
   ui.invalidate();
 });
 
-// The game is turn-based: the loop only flushes redraws requested by input.
-function frame(): void {
-  ui.refresh();
+// Every frame the top screen may advance its clock or an animation; drawing happens only if something changed.
+function frame(now: number): void {
+  ui.refresh(now);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
