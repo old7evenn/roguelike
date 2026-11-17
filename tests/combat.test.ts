@@ -91,6 +91,7 @@ describe('death', () => {
     expect(monster.isAlive).toBe(false);
     expect(game.stage.actors).not.toContain(monster);
     expect(deaths).toEqual([{ actor: monster, killer: game.hero }]);
+    expect(game.defeatedMonsters.get(monster.breed.id)).toBe(1);
 
     walkEast(game);
     expect(game.hero.pos).toEqual(new Vec(2, 1));

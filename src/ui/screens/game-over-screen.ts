@@ -5,7 +5,9 @@ import type { Game } from '../../world/game';
 import { actorName, actorSprite } from '../actor-view';
 import type { Display } from '../display';
 import type { Input } from '../input';
+import { defeatedMonsterLines } from '../run-summary';
 import type { Screen } from '../screen';
+import { urlForSeed } from '../seed-url';
 import { drawStars, rowRange } from '../starfield';
 import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
@@ -40,20 +42,26 @@ export class GameOverScreen implements Screen {
     const centerX = display.columns / 2;
     const { depth, turns, seed } = this.game;
     const { wall } = tileGlyphs(depth);
-    drawStars(display, seed, new Set([...rowRange(7, 11), 15, 18, 20, 23]));
+    const defeated = defeatedMonsterLines(this.game);
+    drawStars(display, seed, new Set([...rowRange(5, 9), 13, 16, 18, 20, 21, 22, 25, 28]));
 
-    display.drawText(centerX, 9, 'НЕ СЬОГОДНІ', { color: theme.accent, scale: 3, align: 'center' });
-    display.drawSprite(new Vec(Math.floor(centerX), 15), { ...actorSprite(this.killer), size: 1.6 });
-    display.drawText(centerX, 18, `Тебе здолав ${actorName(this.killer)}.`, {
+    display.drawText(centerX, 7, 'НЕ СЬОГОДНІ', { color: theme.accent, scale: 3, align: 'center' });
+    display.drawSprite(new Vec(Math.floor(centerX), 13), { ...actorSprite(this.killer), size: 1.6 });
+    display.drawText(centerX, 16, `Тебе здолав ${actorName(this.killer)}.`, {
       color: theme.text,
       scale: 1.25,
       align: 'center',
     });
-    display.drawText(centerX, 20, `поверх ${depth} · ${turns} ходів · seed ${seed}`, {
+    display.drawText(centerX, 18, `поверх ${depth} · ${turns} ходів · seed ${seed}`, {
       color: wall.fg,
       align: 'center',
     });
-    display.drawText(centerX, 23, 'Enter — ця сама ніч ще раз   ·   N — інша ніч', {
+    display.drawText(centerX, 20, 'ПОДОЛАНО', { color: theme.accent, scale: 0.85, align: 'center' });
+    defeated.forEach((line, index) => {
+      display.drawText(centerX, 21 + index, line, { color: theme.text, align: 'center' });
+    });
+    display.drawText(centerX, 25, urlForSeed(seed), { color: theme.stairs, align: 'center' });
+    display.drawText(centerX, 28, 'Enter — ця сама ніч ще раз   ·   N — інша ніч', {
       color: theme.dim,
       align: 'center',
     });

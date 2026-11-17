@@ -9,7 +9,7 @@ import { spawnItems } from '../generation/spawn-items';
 import { spawnMonsters } from '../generation/spawn-monsters';
 import type { Action, ActionResult } from './actions/action';
 import type { Actor } from './actor';
-import { Boss } from './breeds';
+import { Boss, type BreedId } from './breeds';
 import { Hero } from './hero';
 import type { ItemType } from './items';
 import { Monster } from './monster';
@@ -53,6 +53,7 @@ export class Game {
   private currentActor = 0;
   private turnCount = 0;
   private gameStatus: GameStatus = 'playing';
+  private readonly defeatedByBreed = new Map<BreedId, number>();
 
   /** `generatorFor` picks the map strategy for each depth; tests pass a fixed one. */
   constructor(seed: number, generatorFor: (depth: number) => DungeonGenerator = generatorForDepth) {
@@ -76,6 +77,10 @@ export class Game {
 
   get status(): GameStatus {
     return this.gameStatus;
+  }
+
+  get defeatedMonsters(): ReadonlyMap<BreedId, number> {
+    return this.defeatedByBreed;
   }
 
   /** Set once the hero reaches the last floor. */
@@ -133,6 +138,10 @@ export class Game {
     // with them so the next actor in line doesn't lose its turn.
     if (this.currentStage.actors.indexOf(actor) < this.currentActor) this.currentActor--;
     this.currentStage.removeActor(actor);
+    if (actor instanceof Monster && killer === this.hero) {
+      const id = actor.breed.id;
+      this.defeatedByBreed.set(id, (this.defeatedByBreed.get(id) ?? 0) + 1);
+    }
     this.events.emit('death', { actor, killer });
 
     if (actor === this.finalBoss) {
