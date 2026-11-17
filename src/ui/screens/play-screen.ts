@@ -18,6 +18,7 @@ import { drawActors, drawItems, drawStage } from '../stage-view';
 import { theme, tileGlyphs } from '../theme';
 import type { Ui } from '../ui';
 import { GameOverScreen } from './game-over-screen';
+import { HelpScreen } from './help-screen';
 import { InventoryScreen } from './inventory-screen';
 import { TitleScreen } from './title-screen';
 import { VictoryScreen } from './victory-screen';
@@ -99,6 +100,9 @@ export class PlayScreen implements Screen {
         this.ui.push(new InventoryScreen(this.ui, hero, (item) => this.act(new UseItemAction(hero, item))));
         return true;
       }
+      case 'help':
+        this.ui.push(new HelpScreen(this.ui));
+        return true;
       case 'explore':
         this.startTravel({ kind: 'explore' });
         return true;
