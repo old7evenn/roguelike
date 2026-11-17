@@ -14,7 +14,7 @@ import { gameWith, rest } from './helpers';
 const standStill: Behavior = { nextAction: (monster) => new RestAction(monster) };
 
 function dummy(stats: Partial<Breed> = {}): Breed {
-  return { ...Breeds.whisper, behavior: standStill, ...stats };
+  return { ...Breeds.whisper, speed: 100, behavior: standStill, ...stats };
 }
 
 function walkEast(game: Game): void {
@@ -59,15 +59,15 @@ describe('bump to attack', () => {
     expect(new Set(armoredHits.map((hit) => hit.damage))).toEqual(new Set([1]));
   });
 
-  it('lets a monster next to the hero hit them on its turn', () => {
+  it('lets a slower monster next to the hero attack at its own cadence', () => {
     const { game, monster } = gameWith(Breeds.whisper, new Vec(2, 1));
     const attacks = record(game, 'attack');
 
     rest(game, 3);
 
-    expect(attacks).toHaveLength(3);
+    expect(attacks).toHaveLength(2);
     expect(attacks.every((hit) => hit.attacker === monster && hit.defender === game.hero)).toBe(true);
-    expect(game.hero.hp).toBe(HERO_STATS.maxHp - 3);
+    expect(game.hero.hp).toBe(HERO_STATS.maxHp - attacks.reduce((sum, hit) => sum + hit.damage, 0));
   });
 
   it('never makes monsters fight each other', () => {
@@ -98,7 +98,7 @@ describe('death', () => {
   });
 
   it('ends the game when the hero dies, and nothing acts afterwards', () => {
-    const { game, monster } = gameWith({ ...Breeds.whisper, attack: 100 }, new Vec(2, 1));
+    const { game, monster } = gameWith({ ...Breeds.whisper, attack: 100, speed: 100 }, new Vec(2, 1));
     const defeats = record(game, 'defeat');
     const attacks = record(game, 'attack');
 

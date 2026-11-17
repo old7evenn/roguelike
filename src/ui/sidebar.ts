@@ -77,6 +77,7 @@ function drawMonsters(display: Display, game: Game, top: number): number {
     const y = top + 1 + i;
     display.drawSprite(new Vec(LEFT, y), actorSprite(monster));
     display.drawText(LEFT + 1.4, y, actorName(monster), { color: theme.monsters[monster.breed.id].color });
+    if (monster.alertTurns > 0) display.drawText(LEFT + 8, y, '!', { color: theme.accent });
     drawHealthBar(display, LEFT + 9, y + (1 - BAR_HEIGHT) / 2, 6.5, monster.hp / monster.maxHp, BAR_HEIGHT);
     display.drawText(RIGHT, y, `${monster.hp}/${monster.maxHp}`, { color: theme.dim, align: 'right' });
   });
@@ -126,6 +127,7 @@ function describeCell(game: Game, pos: Vec): string[] {
       return [
         capitalize(actorName(actor)),
         `HP ${actor.hp}/${actor.maxHp} · атака ${actor.attack} · захист ${actor.defense}`,
+        actor.alertTurns > 0 ? 'стан: переслідує' : 'стан: патрулює',
         theme.monsterNotes[actor.breed.id],
       ];
     }

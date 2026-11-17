@@ -14,7 +14,7 @@
 ### 2.1 Монстри ✅
 - [x] `Breed` — Type Object: назва, `maxHp`, `attack`, `defense`, поведінка, глибина появи. Таблиця порід у `world/breeds.ts`, гліфи в `ui/theme.ts`.
 - [x] `Monster extends Actor` з `hp`; `nextAction` делегує `Behavior` (Strategy).
-- [x] Поведінки: `ChaseBehavior` (йде вниз по `distanceMap` від героя, якщо бачить або чує), `WanderBehavior`.
+- [x] Поведінки: монстри патрулюють, бачать через shadowcasting, окремі породи чують героя по коридорах і кілька ходів шукають останню відому позицію; `WanderBehavior` реагує лише на зір.
 - [x] `Stage.actorAt(pos)`; актори блокують прохід.
 - [x] Спавн монстрів на поверсі з детермінованого `Rng` (окремий seed від генерації карти); глибші поверхи — сильніші породи.
 
