@@ -23,6 +23,7 @@ const CONTROLS: readonly (readonly [key: string, action: string])[] = [
   ['.', 'чекати хід'],
   ['I', 'речі'],
   ['M', 'звук'],
+  ['H / ?', 'довідка'],
   ['N', 'нова гра'],
 ];
 
