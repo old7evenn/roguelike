@@ -10,6 +10,7 @@ export type Input =
   | 'confirm'
   | 'cancel'
   | 'inventory'
+  | 'sound'
   | 'newGame';
 
 /**
@@ -37,6 +38,7 @@ const KEY_BINDINGS: ReadonlyMap<string, Input> = new Map([
   ['Space', 'confirm'],
   ['Escape', 'cancel'],
   ['KeyI', 'inventory'],
+  ['KeyM', 'sound'],
   ['KeyN', 'newGame'],
 ]);
 

@@ -20,13 +20,18 @@ ui.goTo(new TitleScreen(ui, readSeedFromUrl() ?? randomSeed()));
 
 window.addEventListener('keydown', (event) => {
   const input = inputForKey(event.code);
-  if (input && ui.handleInput(input)) event.preventDefault();
+  if (!input) return;
+  ui.sound.unlock();
+  if (ui.handleInput(input)) event.preventDefault();
 });
 
 for (const button of document.querySelectorAll<HTMLButtonElement>('#touch [data-input]')) {
   button.addEventListener('click', () => {
     const input = button.dataset.input;
-    if (isInput(input)) ui.handleInput(input);
+    if (isInput(input)) {
+      ui.sound.unlock();
+      ui.handleInput(input);
+    }
   });
 }
 
@@ -34,6 +39,7 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('#touch [data-
 canvas.addEventListener('pointermove', (event) => ui.hover(display.cellAt(event.clientX, event.clientY)));
 canvas.addEventListener('pointerleave', () => ui.hover(null));
 canvas.addEventListener('click', (event) => {
+  ui.sound.unlock();
   const cell = display.cellAt(event.clientX, event.clientY);
   if (cell) ui.click(cell);
 });

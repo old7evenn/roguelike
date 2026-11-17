@@ -2,6 +2,7 @@ import type { Vec } from '../engine/vec';
 import type { Display } from './display';
 import type { Input } from './input';
 import type { Screen } from './screen';
+import { Sound } from './sound';
 
 /**
  * A stack of screens: input goes to the top one, and all of them are drawn
@@ -9,6 +10,7 @@ import type { Screen } from './screen';
  * Redraws only when something changed.
  */
 export class Ui {
+  readonly sound = new Sound();
   private readonly display: Display;
   private readonly screens: Screen[] = [];
   private dirty = true;
@@ -35,6 +37,11 @@ export class Ui {
   }
 
   handleInput(input: Input): boolean {
+    if (input === 'sound') {
+      this.sound.toggle();
+      this.dirty = true;
+      return true;
+    }
     const handled = this.screens.at(-1)?.handleInput(input) ?? false;
     if (handled) this.dirty = true;
     return handled;

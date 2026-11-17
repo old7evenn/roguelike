@@ -48,6 +48,7 @@ export class PlayScreen implements Screen {
   constructor(ui: Ui, game: Game) {
     this.ui = ui;
     this.game = game;
+    ui.sound.listenTo(game);
     this.say('Знайди сходи вниз. Клікни по карті, щоб іти, або X — дослідити.');
 
     game.events.on('message', (text) => this.say(text));
@@ -146,7 +147,7 @@ export class PlayScreen implements Screen {
     drawItems(display, stage);
     drawActors(display, stage);
     if (this.hovered) display.strokeRect(this.hovered.x, this.hovered.y, 1, 1, theme.accent);
-    drawSidebar(display, this.game, this.hovered);
+    drawSidebar(display, this.game, this.hovered, this.ui.sound.isEnabled);
     this.renderLog(display);
   }
 
