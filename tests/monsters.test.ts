@@ -6,6 +6,7 @@ import { buildLevel } from '../src/generation/level';
 import { RoomsAndCorridors } from '../src/generation/rooms-and-corridors';
 import { SAFE_RADIUS, spawnMonsters } from '../src/generation/spawn-monsters';
 import { RestAction } from '../src/world/actions/rest-action';
+import type { Behavior } from '../src/world/behaviors/behavior';
 import { ChaseBehavior } from '../src/world/behaviors/chase-behavior';
 import { WanderBehavior } from '../src/world/behaviors/wander-behavior';
 import { Breeds, breedsForDepth } from '../src/world/breeds';
@@ -82,6 +83,25 @@ describe('Game with monsters', () => {
       return monstersOf(game).map((m) => `${m.breed.id}@${m.pos}`);
     };
     expect(positions(1234)).toEqual(positions(1234));
+  });
+
+  it('lets fast monsters act more often and slow monsters less often', () => {
+    const actionsInFourHeroTurns = (speed: number): number => {
+      let actions = 0;
+      const behavior: Behavior = {
+        nextAction(monster) {
+          actions++;
+          return new RestAction(monster);
+        },
+      };
+      const { game } = gameWith({ ...Breeds.whisper, speed, behavior }, new Vec(5, 3));
+      rest(game, 4);
+      return actions;
+    };
+
+    expect(actionsInFourHeroTurns(125)).toBe(5);
+    expect(actionsInFourHeroTurns(100)).toBe(4);
+    expect(actionsInFourHeroTurns(75)).toBe(3);
   });
 });
 

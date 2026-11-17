@@ -3,7 +3,7 @@ import type { Action } from './actions/action';
 import { Actor } from './actor';
 import type { ItemType, WeaponType } from './items';
 
-export const HERO_STATS = { maxHp: 20, attack: 3, defense: 1, maxHpPerFloor: 5 } as const;
+export const HERO_STATS = { maxHp: 20, attack: 3, defense: 1, speed: 100, maxHpPerFloor: 5 } as const;
 
 /** Sight radius at full HP and at the last HP point; see `Hero.sightRadius`. */
 export const SIGHT = { widest: 8, narrowest: 3 } as const;
@@ -13,6 +13,7 @@ export class Hero extends Actor {
   /** Grows with every floor down; see `growStronger`. */
   maxHp: number = HERO_STATS.maxHp;
   readonly defense = HERO_STATS.defense;
+  readonly speed = HERO_STATS.speed;
   /** No size limit: there are only a handful of item kinds, and the screen groups duplicates. */
   readonly inventory: ItemType[] = [];
   weapon: WeaponType | null = null;

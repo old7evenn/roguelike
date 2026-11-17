@@ -38,6 +38,7 @@ export type GameStatus = 'playing' | 'won' | 'lost';
 const PLAY_SALT = 0;
 const SPAWN_SALT = 1;
 const ITEM_SALT = 2;
+const ENERGY_PER_ACTION = 100;
 
 export class Game {
   readonly seed: number;
@@ -91,6 +92,13 @@ export class Game {
     while (this.gameStatus === 'playing') {
       const actor = this.currentStage.actors[this.currentActor];
       if (!actor) return;
+
+      if (actor.energy < ENERGY_PER_ACTION) actor.energy += actor.speed;
+      if (actor.energy < ENERGY_PER_ACTION) {
+        this.advanceActor();
+        continue;
+      }
+
       // Monsters have moved since the hero last looked, so the view is refreshed before every hero turn.
       if (actor === this.hero) this.refreshView();
 
@@ -108,11 +116,11 @@ export class Game {
       } else if (actor === this.hero) {
         this.turnCount++;
       }
+      actor.energy -= ENERGY_PER_ACTION;
 
       // A new stage restarts the turn order at the hero.
-      if (this.currentStage === stageBefore) {
-        this.currentActor = (this.currentActor + 1) % this.currentStage.actors.length;
-      }
+      // A fast actor that still has enough energy acts again before the next one.
+      if (this.currentStage === stageBefore && actor.energy < ENERGY_PER_ACTION) this.advanceActor();
     }
   }
 
@@ -143,6 +151,10 @@ export class Game {
 
   private refreshView(): void {
     this.currentStage.refreshView(this.hero.pos, this.hero.sightRadius);
+  }
+
+  private advanceActor(): void {
+    this.currentActor = (this.currentActor + 1) % this.currentStage.actors.length;
   }
 
   private perform(action: Action): ActionResult {

@@ -25,6 +25,10 @@ export class Monster extends Actor {
     return this.breed.defense;
   }
 
+  get speed(): number {
+    return this.breed.speed;
+  }
+
   override nextAction(game: Game): Action {
     return this.breed.behavior.nextAction(this, game);
   }

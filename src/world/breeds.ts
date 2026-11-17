@@ -19,6 +19,7 @@ export interface Breed {
   readonly maxHp: number;
   readonly attack: number;
   readonly defense: number;
+  readonly speed: number;
   readonly behavior: Behavior;
   /** The shallowest depth where this breed can appear. */
   readonly minDepth: number;
@@ -31,6 +32,7 @@ export const Breeds: Readonly<Record<SpawnableBreedId, Breed>> = {
     maxHp: 3,
     attack: 1,
     defense: 0,
+    speed: 100,
     behavior: new ChaseBehavior(6),
     minDepth: 1,
   },
@@ -40,6 +42,7 @@ export const Breeds: Readonly<Record<SpawnableBreedId, Breed>> = {
     maxHp: 2,
     attack: 1,
     defense: 0,
+    speed: 125,
     behavior: new WanderBehavior(),
     minDepth: 1,
   },
@@ -49,6 +52,7 @@ export const Breeds: Readonly<Record<SpawnableBreedId, Breed>> = {
     maxHp: 6,
     attack: 3,
     defense: 1,
+    speed: 100,
     behavior: new ChaseBehavior(8),
     minDepth: 3,
   },
@@ -58,6 +62,7 @@ export const Breeds: Readonly<Record<SpawnableBreedId, Breed>> = {
     maxHp: 10,
     attack: 4,
     defense: 2,
+    speed: 100,
     behavior: new ChaseBehavior(10),
     minDepth: 5,
   },
@@ -67,6 +72,7 @@ export const Breeds: Readonly<Record<SpawnableBreedId, Breed>> = {
     maxHp: 14,
     attack: 5,
     defense: 2,
+    speed: 75,
     behavior: new ChaseBehavior(8),
     minDepth: 8,
   },
@@ -79,6 +85,7 @@ export const Boss: Breed = {
   maxHp: 32,
   attack: 5,
   defense: 1,
+  speed: 100,
   behavior: new BossBehavior(Breeds.whisper),
   minDepth: config.maxDepth,
 };
