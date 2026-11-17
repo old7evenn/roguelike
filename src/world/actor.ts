@@ -6,10 +6,13 @@ import type { Game } from './game';
 export abstract class Actor {
   pos: Vec;
   hp: number;
+  /** Scheduler state: acting spends 100 energy, and speed refills it. */
+  energy = 0;
 
   abstract readonly maxHp: number;
   abstract readonly attack: number;
   abstract readonly defense: number;
+  abstract readonly speed: number;
 
   constructor(pos: Vec, hp: number) {
     this.pos = pos;

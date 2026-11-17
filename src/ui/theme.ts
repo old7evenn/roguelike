@@ -32,10 +32,10 @@ export const theme = {
   /** One line per breed for the side panel: what to expect from it. */
   monsterNotes: {
     whisper: 'слабкий, але чує тебе здалеку',
-    restlessness: "блукає навмання, ледь б'є",
+    restlessness: "швидкий, блукає навмання, ледь б'є",
     reproach: "б'є відчутно, женеться",
     memory: 'міцний, чує через пів поверху',
-    burden: 'дуже сильний, краще з повним HP',
+    burden: 'повільний, але дуже сильний',
     despair: 'бос: кличе шепіт на поміч',
   } satisfies Record<BreedId, string>,
   // Drinks are mugs, weapons are sticks: items never look like the ghosts.
