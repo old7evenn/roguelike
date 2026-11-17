@@ -91,6 +91,9 @@ export class CanvasDisplay implements Display {
       case 'stick':
         this.drawStick(x, y, r, sprite.color);
         break;
+      case 'cloth':
+        this.drawCloth(x, y, r);
+        break;
     }
     context.restore();
   }
@@ -223,6 +226,20 @@ export class CanvasDisplay implements Display {
     context.beginPath();
     context.arc(x + r * 0.6, y - r * 0.6, r * 0.25, 0, Math.PI * 2);
     context.fill();
+  }
+
+  /** Folded fabric: armor should not be mistaken for a drink or a weapon. */
+  private drawCloth(x: number, y: number, r: number): void {
+    const { context } = this;
+    context.beginPath();
+    context.roundRect(x - r * 0.85, y - r * 0.65, r * 1.7, r * 1.3, r * 0.2);
+    context.fill();
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(x - r * 0.45, y - r * 0.65);
+    context.lineTo(x - r * 0.1, y + r * 0.65);
+    context.stroke();
   }
 
   private font(scale: number): string {

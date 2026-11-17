@@ -9,8 +9,8 @@ import { theme } from '../theme';
 import type { Ui } from '../ui';
 
 const WIDTH = 34;
-/** Rows above the item list: title, weapon line, a gap. */
-const HEADER_ROWS = 4;
+/** Rows above the item list: title, equipped items, a gap. */
+const HEADER_ROWS = 5;
 
 interface Entry {
   readonly type: ItemType;
@@ -64,13 +64,16 @@ export class InventoryScreen implements Screen {
     drawPanel(display, left, top, height);
 
     const textLeft = left + 2;
-    const { weapon } = this.hero;
+    const { weapon, armor } = this.hero;
     display.drawText(left + WIDTH / 2, top + 1, 'Речі', {
       color: theme.accent,
       scale: 1.25,
       align: 'center',
     });
     display.drawText(textLeft, top + 2.5, `У руках: ${weapon ? describeItem(weapon) : 'нічого'}`, {
+      color: theme.dim,
+    });
+    display.drawText(textLeft, top + 3.5, `На тобі: ${armor ? describeItem(armor) : 'нічого'}`, {
       color: theme.dim,
     });
 

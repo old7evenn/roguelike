@@ -30,6 +30,11 @@ export class UseItemAction extends Action {
         if (hero.weapon) hero.inventory.push(hero.weapon);
         hero.weapon = item;
         break;
+      case 'armor':
+        hero.inventory.splice(index, 1);
+        if (hero.armor) hero.inventory.push(hero.armor);
+        hero.armor = item;
+        break;
     }
 
     game.events.emit('itemUsed', item);

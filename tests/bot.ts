@@ -7,7 +7,7 @@ import { UseItemAction } from '../src/world/actions/use-item-action';
 import { WalkAction } from '../src/world/actions/walk-action';
 import { Game } from '../src/world/game';
 import type { Hero } from '../src/world/hero';
-import type { PotionType, WeaponType } from '../src/world/items';
+import type { ArmorType, PotionType, WeaponType } from '../src/world/items';
 import { Monster } from '../src/world/monster';
 
 export interface BotRun {
@@ -26,7 +26,7 @@ const MAX_TURNS = 5000;
 
 /**
  * A plain, honest-ish player for balance checks: fights whatever stands next to
- * it, drinks when low, wields the best weapon it has, grabs nearby items, and
+ * it, drinks when low, equips the best weapon and armor it has, grabs nearby items, and
  * otherwise heads for the stairs (or the boss). Unlike a human it knows the whole
  * map, but it never flees, never lures monsters into corridors and never saves
  * potions for later, so a human should do at least as well.
@@ -55,6 +55,8 @@ function chooseAction(game: Game): Action {
 
   const weapon = bestWeapon(hero);
   if (weapon) return new UseItemAction(hero, weapon);
+  const armor = bestArmor(hero);
+  if (armor) return new UseItemAction(hero, armor);
 
   const step = stepTowards(game, goal(game));
   return step ? new WalkAction(hero, step) : new RestAction(hero);
@@ -72,6 +74,15 @@ function bestWeapon(hero: Hero): WeaponType | undefined {
   return weapons
     .filter((weapon) => weapon.attackBonus > current)
     .sort((a, b) => b.attackBonus - a.attackBonus)[0];
+}
+
+/** Armor from the bag that beats what is currently worn, if any. */
+function bestArmor(hero: Hero): ArmorType | undefined {
+  const current = hero.armor?.defenseBonus ?? 0;
+  const armor = hero.inventory.filter((item): item is ArmorType => item.kind === 'armor');
+  return armor
+    .filter((item) => item.defenseBonus > current)
+    .sort((a, b) => b.defenseBonus - a.defenseBonus)[0];
 }
 
 function goal(game: Game): Vec {

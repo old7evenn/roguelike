@@ -31,6 +31,10 @@ function heroDoes(game: Game, action: Action): void {
 describe('item types', () => {
   it('unlocks better items deeper', () => {
     expect(itemsForDepth(1).map((item) => item.id)).toEqual(['tea', 'pencil']);
+    expect(itemsForDepth(4)).not.toContain(ItemTypes.sweater);
+    expect(itemsForDepth(5)).toContain(ItemTypes.sweater);
+    expect(itemsForDepth(8)).not.toContain(ItemTypes.blanket);
+    expect(itemsForDepth(9)).toContain(ItemTypes.blanket);
     expect(itemsForDepth(10)).toHaveLength(Object.keys(ItemTypes).length);
   });
 });
@@ -127,6 +131,21 @@ describe('using items', () => {
     expect(hero.weapon).toBe(ItemTypes.diary);
     expect(hero.attack).toBe(HERO_STATS.attack + ItemTypes.diary.attackBonus);
     expect(hero.inventory).toEqual([ItemTypes.pencil]);
+  });
+
+  it('equips armor for a defense bonus and puts the old one back in the bag', () => {
+    const game = emptyRoom();
+    const { hero } = game;
+    hero.inventory.push(ItemTypes.sweater, ItemTypes.blanket);
+
+    heroDoes(game, new UseItemAction(hero, ItemTypes.sweater));
+    expect(hero.armor).toBe(ItemTypes.sweater);
+    expect(hero.defense).toBe(HERO_STATS.defense + ItemTypes.sweater.defenseBonus);
+
+    heroDoes(game, new UseItemAction(hero, ItemTypes.blanket));
+    expect(hero.armor).toBe(ItemTypes.blanket);
+    expect(hero.defense).toBe(HERO_STATS.defense + ItemTypes.blanket.defenseBonus);
+    expect(hero.inventory).toEqual([ItemTypes.sweater]);
   });
 
   it('refuses an item the hero does not have', () => {

@@ -55,6 +55,7 @@ function drawHero(display: Display, game: Game, top: number): number {
     `атака ${hero.attack} · захист ${hero.defense}`,
     `огляд ${hero.sightRadius} клітинок`,
     `у руках: ${hero.weapon?.name ?? 'нічого'}`,
+    `на тобі: ${hero.armor?.name ?? 'нічого'}`,
   ];
   lines.forEach((line, i) => {
     display.drawText(LEFT, hpTop + 1 + i, line, { color: theme.dim });

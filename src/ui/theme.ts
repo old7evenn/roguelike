@@ -38,13 +38,15 @@ export const theme = {
     burden: 'повільний, але дуже сильний',
     despair: 'бос: кличе шепіт на поміч',
   } satisfies Record<BreedId, string>,
-  // Drinks are mugs, weapons are sticks: items never look like the ghosts.
+  // Drinks, weapons and armor have different silhouettes; none looks like a ghost.
   items: {
     tea: { shape: 'mug', color: '#f4a96a', size: 0.8 },
     cocoa: { shape: 'mug', color: '#c98a5e', size: 0.85 },
     pencil: { shape: 'stick', color: '#f2d16b', size: 0.8 },
     flashlight: { shape: 'stick', color: '#fff3b0', size: 0.85 },
     diary: { shape: 'stick', color: '#ffb3c7', size: 0.9 },
+    sweater: { shape: 'cloth', color: '#8fc9ff', size: 0.86 },
+    blanket: { shape: 'cloth', color: '#b9a7e8', size: 0.96 },
   } satisfies Record<ItemId, Sprite>,
 } as const;
 
