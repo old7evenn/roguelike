@@ -1,7 +1,7 @@
 import type { Vec } from '../engine/vec';
 import type { Action } from './actions/action';
 import { Actor } from './actor';
-import type { ItemType, WeaponType } from './items';
+import type { ArmorType, ItemType, WeaponType } from './items';
 
 export const HERO_STATS = { maxHp: 20, attack: 3, defense: 1, speed: 100, maxHpPerFloor: 5 } as const;
 
@@ -12,11 +12,11 @@ export const SIGHT = { widest: 8, narrowest: 3 } as const;
 export class Hero extends Actor {
   /** Grows with every floor down; see `growStronger`. */
   maxHp: number = HERO_STATS.maxHp;
-  readonly defense = HERO_STATS.defense;
   readonly speed = HERO_STATS.speed;
   /** No size limit: there are only a handful of item kinds, and the screen groups duplicates. */
   readonly inventory: ItemType[] = [];
   weapon: WeaponType | null = null;
+  armor: ArmorType | null = null;
 
   private queuedAction: Action | null = null;
 
@@ -26,6 +26,10 @@ export class Hero extends Actor {
 
   get attack(): number {
     return HERO_STATS.attack + (this.weapon?.attackBonus ?? 0);
+  }
+
+  get defense(): number {
+    return HERO_STATS.defense + (this.armor?.defenseBonus ?? 0);
   }
 
   /** Every floor survived toughens the hero: more max HP, and the new HP comes already filled. */

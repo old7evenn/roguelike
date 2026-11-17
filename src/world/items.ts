@@ -1,4 +1,4 @@
-export type ItemId = 'tea' | 'cocoa' | 'pencil' | 'flashlight' | 'diary';
+export type ItemId = 'tea' | 'cocoa' | 'pencil' | 'flashlight' | 'diary' | 'sweater' | 'blanket';
 
 interface ItemTypeBase {
   readonly id: ItemId;
@@ -12,12 +12,13 @@ interface ItemTypeBase {
 
 export type PotionType = ItemTypeBase & { readonly kind: 'potion'; readonly heal: number };
 export type WeaponType = ItemTypeBase & { readonly kind: 'weapon'; readonly attackBonus: number };
+export type ArmorType = ItemTypeBase & { readonly kind: 'armor'; readonly defenseBonus: number };
 
 /**
  * Type Object pattern, like `Breed`: an item has no state of its own, so the
  * inventory simply holds these shared objects. `kind` tells what using it does.
  */
-export type ItemType = PotionType | WeaponType;
+export type ItemType = PotionType | WeaponType | ArmorType;
 
 // `satisfies` instead of a type annotation keeps each entry's own kind, so
 // `ItemTypes.pencil.attackBonus` type-checks.
@@ -34,6 +35,8 @@ export const ItemTypes = {
     minDepth: 3,
   },
   diary: { id: 'diary', kind: 'weapon', name: 'щоденник', attackBonus: 4, frequency: 1, minDepth: 6 },
+  sweater: { id: 'sweater', kind: 'armor', name: 'светр', defenseBonus: 1, frequency: 1, minDepth: 5 },
+  blanket: { id: 'blanket', kind: 'armor', name: 'ковдра', defenseBonus: 2, frequency: 1, minDepth: 9 },
 } as const satisfies Record<ItemId, ItemType>;
 
 export function itemsForDepth(depth: number): ItemType[] {

@@ -8,9 +8,9 @@ export interface Glyph {
 
 /**
  * Creatures and items are drawn as shapes, not letters: at a glance a ghost
- * reads as "someone", a mug or a stick as "something", and neither looks like a tile.
+ * reads as "someone", a mug, stick or cloth as "something", and none looks like a tile.
  */
-export type SpriteShape = 'hero' | 'ghost' | 'horned' | 'mug' | 'stick';
+export type SpriteShape = 'hero' | 'ghost' | 'horned' | 'mug' | 'stick' | 'cloth';
 
 export interface Sprite {
   readonly shape: SpriteShape;

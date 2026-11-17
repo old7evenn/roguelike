@@ -71,11 +71,17 @@ export class PlayScreen implements Screen {
     game.events.on('itemPickedUp', (item) => this.say(`Підібрано: ${item.name}.`));
     game.events.on('itemUsed', (item) => {
       const { hero } = game;
-      this.say(
-        item.kind === 'potion'
-          ? `${capitalize(item.name)}: HP ${hero.hp}/${hero.maxHp}.`
-          : `Тепер у руках ${item.name}.`,
-      );
+      switch (item.kind) {
+        case 'potion':
+          this.say(`${capitalize(item.name)}: HP ${hero.hp}/${hero.maxHp}.`);
+          break;
+        case 'weapon':
+          this.say(`Тепер у руках ${item.name}.`);
+          break;
+        case 'armor':
+          this.say(`Тепер на тобі ${item.name}.`);
+          break;
+      }
     });
     game.events.on('victory', () => {
       ui.goTo(new VictoryScreen(ui, game));
