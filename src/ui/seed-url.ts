@@ -9,7 +9,11 @@ export function readSeedFromUrl(): number | null {
 
 /** replaceState, not pushState: changing the seed shouldn't fill the back button history. */
 export function writeSeedToUrl(seed: number): void {
+  history.replaceState(null, '', urlForSeed(seed));
+}
+
+export function urlForSeed(seed: number): string {
   const url = new URL(location.href);
   url.searchParams.set(PARAM, String(seed));
-  history.replaceState(null, '', url);
+  return url.toString();
 }
