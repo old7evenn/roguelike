@@ -10,17 +10,32 @@ import type { Stage } from './stage';
  * The stairs are avoided unless they are the goal: one stray step there ends the floor.
  */
 
+/**
+ * The cells of a shortest path from `from` to `goal`, not counting `from`.
+ * Empty when there is no path through seen cells. The UI draws it under the pointer.
+ */
+export function pathToward(stage: Stage, from: Vec, goal: Vec): Vec[] {
+  if (from.equals(goal) || !isKnownFloor(stage, goal)) return [];
+  const toGoal = distanceMap(stage.width, stage.height, goal, (pos) => isTravelable(stage, pos, goal));
+  const path: Vec[] = [];
+  // Every step goes strictly downhill on the distance map, so the walk always reaches the goal.
+  for (let pos = from; !pos.equals(goal); ) {
+    const here = toGoal.get(pos);
+    const next = CARDINAL_DIRECTIONS.map((direction) => pos.add(direction)).find(
+      (cell) => toGoal.contains(cell) && toGoal.get(cell) < here,
+    );
+    if (!next) return [];
+    path.push(next);
+    pos = next;
+  }
+  return path;
+}
+
 /** The direction of the first step on a shortest path to `goal`, or null if there is none. */
 export function stepToward(stage: Stage, from: Vec, goal: Vec): Vec | null {
-  if (from.equals(goal) || !isKnownFloor(stage, goal)) return null;
-  const toGoal = distanceMap(stage.width, stage.height, goal, (pos) => isTravelable(stage, pos, goal));
-  const here = toGoal.get(from);
-  return (
-    CARDINAL_DIRECTIONS.find((direction) => {
-      const next = from.add(direction);
-      return toGoal.contains(next) && toGoal.get(next) < here;
-    }) ?? null
-  );
+  const next = pathToward(stage, from, goal)[0];
+  if (!next) return null;
+  return CARDINAL_DIRECTIONS.find((direction) => from.add(direction).equals(next)) ?? null;
 }
 
 /**

@@ -6,7 +6,7 @@ import { ItemTypes } from '../src/world/items';
 import { Monster } from '../src/world/monster';
 import { Stage } from '../src/world/stage';
 import { Tiles, type TileType } from '../src/world/tile';
-import { exploreTarget, knownExit, stepToward, visibleMonsters } from '../src/world/travel';
+import { exploreTarget, knownExit, pathToward, stepToward, visibleMonsters } from '../src/world/travel';
 
 /** Builds a stage from rows of '#' (wall), '.' (floor) and '>' (stairs). */
 function stageFrom(rows: string[]): Stage {
@@ -65,6 +65,36 @@ describe('stepToward', () => {
 
     expect(stepToward(stage, new Vec(1, 1), new Vec(10, 1))).toBeNull();
     expect(stepToward(stage, new Vec(1, 1), new Vec(1, 0))).toBeNull();
+  });
+});
+
+describe('pathToward', () => {
+  it('lists every cell of the way, ending at the goal', () => {
+    const stage = stageFrom(['#######', '#.....#', '#######']);
+    stage.refreshView(new Vec(1, 1), 8);
+
+    expect(pathToward(stage, new Vec(1, 1), new Vec(4, 1))).toEqual([
+      new Vec(2, 1),
+      new Vec(3, 1),
+      new Vec(4, 1),
+    ]);
+  });
+
+  it('agrees with the steps that stepToward takes', () => {
+    const stage = stageFrom(['#######', '#.#...#', '#...#.#', '#######']);
+    stage.refreshView(new Vec(1, 1), 8);
+
+    expect([new Vec(1, 1), ...pathToward(stage, new Vec(1, 1), new Vec(5, 2))]).toEqual(
+      walk(stage, new Vec(1, 1), new Vec(5, 2)),
+    );
+  });
+
+  it('is empty when the goal cannot be reached', () => {
+    const stage = stageFrom(['#######', '#..#..#', '#######']);
+    stage.refreshView(new Vec(1, 1), 8);
+
+    expect(pathToward(stage, new Vec(1, 1), new Vec(5, 1))).toEqual([]);
+    expect(pathToward(stage, new Vec(1, 1), new Vec(1, 1))).toEqual([]);
   });
 });
 
