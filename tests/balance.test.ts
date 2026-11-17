@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { playBot, summarize } from './bot';
 
-/** `npm run balance` sets a bigger sample; the regular suite keeps it quick. */
-const RUNS = Number(import.meta.env.BALANCE_RUNS ?? 20);
+/** Balance mode uses a bigger sample; the regular suite keeps it quick. */
+const DEFAULT_RUNS = import.meta.env.MODE === 'balance' ? 200 : 20;
+const RUNS = Number(import.meta.env.BALANCE_RUNS ?? DEFAULT_RUNS);
 
 describe('balance', () => {
   it(`is beatable but not trivial for a simple bot (${RUNS} seeds)`, () => {
