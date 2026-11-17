@@ -5,7 +5,7 @@ import type { Game } from '../../world/game';
 import { actorName, actorSprite } from '../actor-view';
 import type { Display } from '../display';
 import type { Input } from '../input';
-import { defeatedMonsterLines } from '../run-summary';
+import { defeatedMonsterLines, mementoSummary } from '../run-summary';
 import type { Screen } from '../screen';
 import { urlForSeed } from '../seed-url';
 import { drawStars, rowRange } from '../starfield';
@@ -43,7 +43,7 @@ export class GameOverScreen implements Screen {
     const { depth, turns, seed } = this.game;
     const { wall } = tileGlyphs(depth);
     const defeated = defeatedMonsterLines(this.game);
-    drawStars(display, seed, new Set([...rowRange(5, 9), 13, 16, 18, 20, 21, 22, 25, 28]));
+    drawStars(display, seed, new Set([...rowRange(5, 9), 13, 16, 18, 19, 20, 21, 22, 25, 28]));
 
     display.drawText(centerX, 7, 'НЕ СЬОГОДНІ', { color: theme.accent, scale: 3, align: 'center' });
     display.drawSprite(new Vec(Math.floor(centerX), 13), { ...actorSprite(this.killer), size: 1.6 });
@@ -56,6 +56,7 @@ export class GameOverScreen implements Screen {
       color: wall.fg,
       align: 'center',
     });
+    display.drawText(centerX, 19, mementoSummary(this.game), { color: theme.stairs, align: 'center' });
     display.drawText(centerX, 20, 'ПОДОЛАНО', { color: theme.accent, scale: 0.85, align: 'center' });
     defeated.forEach((line, index) => {
       display.drawText(centerX, 21 + index, line, { color: theme.text, align: 'center' });

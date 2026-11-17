@@ -1,6 +1,6 @@
 import { Vec } from '../../engine/vec';
 import type { Hero } from '../../world/hero';
-import type { ItemType } from '../../world/items';
+import type { InventoryItemType } from '../../world/items';
 import type { Display } from '../display';
 import type { Input } from '../input';
 import { describeItem } from '../item-view';
@@ -13,7 +13,7 @@ const WIDTH = 34;
 const HEADER_ROWS = 5;
 
 interface Entry {
-  readonly type: ItemType;
+  readonly type: InventoryItemType;
   readonly count: number;
 }
 
@@ -21,10 +21,10 @@ interface Entry {
 export class InventoryScreen implements Screen {
   private readonly ui: Ui;
   private readonly hero: Hero;
-  private readonly onUse: (item: ItemType) => void;
+  private readonly onUse: (item: InventoryItemType) => void;
   private selected = 0;
 
-  constructor(ui: Ui, hero: Hero, onUse: (item: ItemType) => void) {
+  constructor(ui: Ui, hero: Hero, onUse: (item: InventoryItemType) => void) {
     this.ui = ui;
     this.hero = hero;
     this.onUse = onUse;
@@ -101,8 +101,8 @@ export class InventoryScreen implements Screen {
 }
 
 /** Identical items share one line, in the order they were first picked up. */
-function groupItems(items: readonly ItemType[]): Entry[] {
-  const counts = new Map<ItemType, number>();
+function groupItems(items: readonly InventoryItemType[]): Entry[] {
+  const counts = new Map<InventoryItemType, number>();
   for (const item of items) counts.set(item, (counts.get(item) ?? 0) + 1);
   return [...counts].map(([type, count]) => ({ type, count }));
 }

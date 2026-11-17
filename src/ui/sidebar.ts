@@ -1,6 +1,7 @@
 import { config } from '../config';
 import { Vec } from '../engine/vec';
 import type { Game } from '../world/game';
+import { MEMENTO_TOTAL } from '../world/items';
 import { Monster } from '../world/monster';
 import { visibleMonsters } from '../world/travel';
 import { actorName, actorSprite, capitalize } from './actor-view';
@@ -57,6 +58,7 @@ function drawHero(display: Display, game: Game, top: number): number {
     `огляд ${hero.sightRadius} клітинок`,
     `у руках: ${hero.weapon?.name ?? 'нічого'}`,
     `на тобі: ${hero.armor?.name ?? 'нічого'}`,
+    `якорі ${hero.mementos.length}/${MEMENTO_TOTAL}${hero.mementoDefenseBonus ? ' · +1 зах.' : ''}`,
   ];
   lines.forEach((line, i) => {
     display.drawText(LEFT, hpTop + 1 + i, line, { color: theme.dim });

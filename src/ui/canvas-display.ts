@@ -95,6 +95,9 @@ export class CanvasDisplay implements Display {
       case 'cloth':
         this.drawCloth(x, y, r);
         break;
+      case 'keepsake':
+        this.drawKeepsake(x, y, r, sprite.color);
+        break;
     }
     context.restore();
   }
@@ -243,6 +246,27 @@ export class CanvasDisplay implements Display {
     context.moveTo(x - r * 0.45, y - r * 0.65);
     context.lineTo(x - r * 0.1, y + r * 0.65);
     context.stroke();
+  }
+
+  /** A small glowing diamond marks optional quest finds apart from usable gear. */
+  private drawKeepsake(x: number, y: number, r: number, color: string): void {
+    const { context } = this;
+    context.shadowColor = color;
+    context.shadowBlur = r;
+    context.beginPath();
+    context.moveTo(x, y - r);
+    context.lineTo(x + r * 0.75, y);
+    context.lineTo(x, y + r);
+    context.lineTo(x - r * 0.75, y);
+    context.closePath();
+    context.fill();
+    context.stroke();
+    context.shadowBlur = 0;
+
+    context.fillStyle = theme.background;
+    context.beginPath();
+    context.arc(x, y, r * 0.2, 0, Math.PI * 2);
+    context.fill();
   }
 
   private font(scale: number): string {

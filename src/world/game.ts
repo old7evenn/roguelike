@@ -11,7 +11,7 @@ import type { Action, ActionResult } from './actions/action';
 import type { Actor } from './actor';
 import { Boss, type BreedId } from './breeds';
 import { Hero } from './hero';
-import type { ItemType } from './items';
+import type { InventoryItemType, ItemType } from './items';
 import { Monster } from './monster';
 import { Stage } from './stage';
 
@@ -24,7 +24,7 @@ export interface GameEvents {
   death: { actor: Actor; killer: Actor };
   defeat: { killer: Actor };
   itemPickedUp: ItemType;
-  itemUsed: ItemType;
+  itemUsed: InventoryItemType;
   summon: { summoner: Actor; summoned: Actor };
   monsterAlerted: Monster;
 }
