@@ -111,6 +111,11 @@ export class PlayScreen implements Screen {
     game.events.on('summon', ({ summoner, summoned }) => {
       this.say(`${capitalize(actorName(summoner))} кличе — з'являється ${actorName(summoned)}.`);
     });
+    game.events.on('monsterAlerted', (monster) => {
+      if (!game.stage.isVisible(monster.pos)) return;
+      this.say(`${capitalize(actorName(monster))} помічає тебе.`);
+      this.animator.floatText(monster.pos, '!', theme.accent, this.now);
+    });
     game.events.on('attack', ({ attacker, defender, damage }) => {
       const heroHurt = defender === game.hero;
       this.say(

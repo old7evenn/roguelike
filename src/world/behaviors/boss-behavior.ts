@@ -17,7 +17,7 @@ const SUMMON_EVERY = 3;
  */
 export class BossBehavior implements Behavior {
   private readonly minionBreed: Breed;
-  private readonly chase = new ChaseBehavior(Number.POSITIVE_INFINITY);
+  private readonly chase = new ChaseBehavior(Number.POSITIVE_INFINITY, 0, Number.POSITIVE_INFINITY);
 
   constructor(minionBreed: Breed) {
     this.minionBreed = minionBreed;

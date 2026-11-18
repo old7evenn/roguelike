@@ -26,6 +26,7 @@ export interface GameEvents {
   itemPickedUp: ItemType;
   itemUsed: ItemType;
   summon: { summoner: Actor; summoned: Actor };
+  monsterAlerted: Monster;
 }
 
 export type GameStatus = 'playing' | 'won' | 'lost';

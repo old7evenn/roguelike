@@ -31,11 +31,11 @@ export const theme = {
   } satisfies Record<BreedId, Sprite>,
   /** One line per breed for the side panel: what to expect from it. */
   monsterNotes: {
-    whisper: 'слабкий, але чує тебе здалеку',
-    restlessness: "швидкий, блукає навмання, ледь б'є",
-    reproach: "б'є відчутно, женеться",
-    memory: 'міцний, чує через пів поверху',
-    burden: 'повільний, але дуже сильний',
+    whisper: 'повільний, недовго шукає після шуму',
+    restlessness: "дуже швидкий, але б'є слабше за інших",
+    reproach: 'помічає здалеку, переслідує кілька ходів',
+    memory: 'міцний, найдовше пам’ятає твій слід',
+    burden: 'повільний, недовго шукає, б’є найболючіше',
     despair: 'бос: кличе шепіт на поміч',
   } satisfies Record<BreedId, string>,
   // Drinks, weapons and armor have different silhouettes; none looks like a ghost.
