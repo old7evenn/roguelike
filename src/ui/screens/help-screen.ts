@@ -77,6 +77,7 @@ export class HelpScreen implements Screen {
       { sprite: theme.monsters.whisper, text: 'Привиди — монстри; поранені мають смужку HP.' },
       { sprite: theme.items.tea, text: 'Чашки — напої, що відновлюють HP.' },
       { sprite: theme.items.pencil, text: 'Палички — зброя з бонусом до атаки.' },
+      { sprite: theme.items.paperCrane, text: 'Сяючі якорі — необов’язкові знахідки 3/6/9.' },
     ] as const;
 
     entries.forEach(({ sprite, text }, index) => {
@@ -85,7 +86,7 @@ export class HelpScreen implements Screen {
       display.drawText(left + 5, y, text, { color: theme.text });
     });
 
-    const stairsY = top + 5;
+    const stairsY = top + 1 + entries.length;
     display.drawGlyph(new Vec(left + 3, stairsY), { char: '>', fg: theme.stairs });
     display.drawText(left + 5, stairsY, 'Сходи ведуть на наступний поверх.', { color: theme.text });
   }

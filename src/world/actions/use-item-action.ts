@@ -1,13 +1,13 @@
 import type { Game } from '../game';
 import type { Hero } from '../hero';
-import type { ItemType } from '../items';
+import type { InventoryItemType } from '../items';
 import { Action, ActionResult } from './action';
 
 export class UseItemAction extends Action {
   private readonly hero: Hero;
-  private readonly item: ItemType;
+  private readonly item: InventoryItemType;
 
-  constructor(hero: Hero, item: ItemType) {
+  constructor(hero: Hero, item: InventoryItemType) {
     super(hero);
     this.hero = hero;
     this.item = item;

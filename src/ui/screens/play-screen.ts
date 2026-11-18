@@ -6,6 +6,7 @@ import { RestAction } from '../../world/actions/rest-action';
 import { UseItemAction } from '../../world/actions/use-item-action';
 import { WalkAction } from '../../world/actions/walk-action';
 import type { Game } from '../../world/game';
+import { MEMENTO_TOTAL } from '../../world/items';
 import type { Monster } from '../../world/monster';
 import { exploreTarget, knownExit, pathToward, stepToward, visibleMonsters } from '../../world/travel';
 import { actorName, actorSprite, capitalize } from '../actor-view';
@@ -132,7 +133,14 @@ export class PlayScreen implements Screen {
       this.animator.fadeOut(actor, actorSprite(actor), this.now);
     });
     game.events.on('itemPickedUp', (item) => {
-      this.say(`Підібрано: ${item.name}.`);
+      if (item.kind === 'memento') {
+        this.say(`Знайдено якір: ${item.name}. ${item.memory}`);
+        if (game.hero.mementos.length === MEMENTO_TOTAL) {
+          this.say('Усі три якорі з тобою. Спокій додає 1 до захисту.');
+        }
+      } else {
+        this.say(`Підібрано: ${item.name}.`);
+      }
       this.animator.floatText(game.hero.pos, item.name, theme.stairs, this.now);
     });
     game.events.on('itemUsed', (item) => {

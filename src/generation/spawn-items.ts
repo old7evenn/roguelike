@@ -1,5 +1,5 @@
 import type { Rng } from '../engine/rng';
-import { itemsForDepth } from '../world/items';
+import { itemsForDepth, mementoForDepth } from '../world/items';
 import type { FloorItem } from '../world/stage';
 import { floorAwayFromStart, type Level } from './level';
 
@@ -14,6 +14,17 @@ export function spawnItems(level: Level, depth: number, rng: Rng): FloorItem[] {
   for (let i = 0; i < count && freeCells.length > 0; i++) {
     const [pos] = freeCells.splice(rng.int(0, freeCells.length - 1), 1);
     items.push({ type: rng.weighted(types, (type) => type.frequency), pos });
+  }
+
+  const memento = mementoForDepth(depth);
+  if (memento && freeCells.length > 0) {
+    // An anchor is a reason to explore, so prefer a reachable cell well away from the entrance.
+    const distant = floorAwayFromStart(level, 10).filter(
+      (pos) => !items.some((item) => item.pos.equals(pos)),
+    );
+    const candidates = distant.length > 0 ? distant : freeCells;
+    const pos = candidates[rng.int(0, candidates.length - 1)];
+    if (pos) items.push({ type: memento, pos });
   }
   return items;
 }

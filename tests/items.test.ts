@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { distanceMap } from '../src/engine/distance-map';
 import { Rng } from '../src/engine/rng';
 import { Direction, Vec } from '../src/engine/vec';
 import { buildLevel } from '../src/generation/level';
@@ -10,7 +11,15 @@ import { UseItemAction } from '../src/world/actions/use-item-action';
 import { WalkAction } from '../src/world/actions/walk-action';
 import { Game } from '../src/world/game';
 import { HERO_STATS } from '../src/world/hero';
-import { type ItemType, ItemTypes, itemsForDepth } from '../src/world/items';
+import {
+  type ItemType,
+  ItemTypes,
+  itemsForDepth,
+  MEMENTO_DEFENSE_BONUS,
+  MEMENTO_TOTAL,
+  Mementos,
+  type MementoType,
+} from '../src/world/items';
 import { Tiles } from '../src/world/tile';
 import { clearMonsters, OpenRoom } from './helpers';
 
@@ -66,7 +75,36 @@ describe('spawnItems', () => {
   it('only spawns items allowed at the depth', () => {
     for (let seed = 0; seed < 100; seed++) {
       for (const { type } of spawnItems(buildLevel(generator, seed), 1, new Rng(seed))) {
+        expect(type.kind).not.toBe('memento');
+        if (type.kind === 'memento') throw new Error('Mementos do not appear on depth 1');
         expect(type.minDepth).toBe(1);
+      }
+    }
+  });
+
+  it('places one distant memento on floors 3, 6 and 9, deterministically', () => {
+    const expected = new Map<number, MementoType>([
+      [3, Mementos.paperCrane],
+      [6, Mementos.fadedPhoto],
+      [9, Mementos.homeKey],
+    ]);
+
+    for (let depth = 1; depth <= 10; depth++) {
+      const level = buildLevel(generator, 99);
+      const spawn = (seed: number) => spawnItems(level, depth, new Rng(seed));
+      const first = spawn(7);
+      const found = first.filter((item) => item.type.kind === 'memento');
+
+      expect(spawn(7)).toEqual(first);
+      expect(found.map((item) => item.type)).toEqual(expected.has(depth) ? [expected.get(depth)] : []);
+      for (const item of found) {
+        const distances = distanceMap(
+          level.tiles.width,
+          level.tiles.height,
+          level.start,
+          (pos) => level.tiles.get(pos).isWalkable,
+        );
+        expect(distances.get(item.pos)).toBeGreaterThan(10);
       }
     }
   });
@@ -91,6 +129,22 @@ describe('picking up', () => {
     const game = emptyRoom();
     heroDoes(game, new PickUpAction(game.hero));
     expect(game.turns).toBe(0);
+  });
+
+  it('collects all three mementos outside the inventory and grants calm defense', () => {
+    const game = emptyRoom();
+    const { hero } = game;
+
+    for (const memento of Object.values(Mementos)) {
+      game.stage.addItem({ type: memento, pos: hero.pos });
+      heroDoes(game, new PickUpAction(hero));
+    }
+
+    expect(hero.inventory).toEqual([]);
+    expect(hero.mementos).toEqual(Object.values(Mementos));
+    expect(hero.mementos).toHaveLength(MEMENTO_TOTAL);
+    expect(hero.mementoDefenseBonus).toBe(MEMENTO_DEFENSE_BONUS);
+    expect(hero.defense).toBe(HERO_STATS.defense + MEMENTO_DEFENSE_BONUS);
   });
 });
 

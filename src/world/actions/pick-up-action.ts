@@ -15,7 +15,8 @@ export class PickUpAction extends Action {
     if (!item) return ActionResult.failure('Тут нічого немає.');
 
     game.stage.removeItem(item);
-    this.hero.inventory.push(item.type);
+    if (item.type.kind === 'memento') this.hero.collectMemento(item.type);
+    else this.hero.inventory.push(item.type);
     game.events.emit('itemPickedUp', item.type);
     return ActionResult.success;
   }

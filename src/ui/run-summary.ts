@@ -1,5 +1,6 @@
 import { Boss, Breeds } from '../world/breeds';
 import type { Game } from '../world/game';
+import { MEMENTO_TOTAL } from '../world/items';
 
 const BREEDS_PER_LINE = 3;
 
@@ -17,4 +18,9 @@ export function defeatedMonsterLines(game: Game): string[] {
     lines.push(entries.slice(i, i + BREEDS_PER_LINE).join(' · '));
   }
   return lines;
+}
+
+export function mementoSummary(game: Game): string {
+  const count = game.hero.mementos.length;
+  return `якорі ${count}/${MEMENTO_TOTAL}${game.hero.mementoDefenseBonus ? ' · спокій знайдено' : ''}`;
 }

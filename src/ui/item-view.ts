@@ -9,5 +9,7 @@ export function describeItem(item: ItemType): string {
       return `${item.name} (+${item.attackBonus} до атаки)`;
     case 'armor':
       return `${item.name} (+${item.defenseBonus} до захисту)`;
+    case 'memento':
+      return `${item.name} (якір)`;
   }
 }

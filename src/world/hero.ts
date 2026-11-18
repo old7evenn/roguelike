@@ -1,7 +1,14 @@
 import type { Vec } from '../engine/vec';
 import type { Action } from './actions/action';
 import { Actor } from './actor';
-import type { ArmorType, ItemType, WeaponType } from './items';
+import {
+  type ArmorType,
+  type InventoryItemType,
+  MEMENTO_DEFENSE_BONUS,
+  MEMENTO_TOTAL,
+  type MementoType,
+  type WeaponType,
+} from './items';
 
 export const HERO_STATS = { maxHp: 20, attack: 3, defense: 1, speed: 100, maxHpPerFloor: 5 } as const;
 
@@ -14,7 +21,9 @@ export class Hero extends Actor {
   maxHp: number = HERO_STATS.maxHp;
   readonly speed = HERO_STATS.speed;
   /** No size limit: there are only a handful of item kinds, and the screen groups duplicates. */
-  readonly inventory: ItemType[] = [];
+  readonly inventory: InventoryItemType[] = [];
+  /** Optional side-quest finds are kept separately from usable equipment. */
+  readonly mementos: MementoType[] = [];
   weapon: WeaponType | null = null;
   armor: ArmorType | null = null;
 
@@ -29,7 +38,15 @@ export class Hero extends Actor {
   }
 
   get defense(): number {
-    return HERO_STATS.defense + (this.armor?.defenseBonus ?? 0);
+    return HERO_STATS.defense + (this.armor?.defenseBonus ?? 0) + this.mementoDefenseBonus;
+  }
+
+  get mementoDefenseBonus(): number {
+    return this.mementos.length === MEMENTO_TOTAL ? MEMENTO_DEFENSE_BONUS : 0;
+  }
+
+  collectMemento(memento: MementoType): void {
+    if (!this.mementos.some((found) => found.id === memento.id)) this.mementos.push(memento);
   }
 
   /** Every floor survived toughens the hero: more max HP, and the new HP comes already filled. */
